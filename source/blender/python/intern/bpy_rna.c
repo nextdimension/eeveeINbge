@@ -223,7 +223,7 @@ static PyObject *id_free_weakref_cb(PyObject *weakinfo_capsule, PyObject *weakre
 	GHash *weakinfo_hash = PyCapsule_GetPointer(weakinfo_capsule, NULL);
 
 
-	if (BLI_ghash_size(weakinfo_hash) > 1) {
+	if (BLI_ghash_len(weakinfo_hash) > 1) {
 		BLI_ghash_remove(weakinfo_hash, weakref, NULL, NULL);
 	}
 	else { /* get the last id and free it */
@@ -243,7 +243,7 @@ static void id_release_weakref_list(struct ID *id, GHash *weakinfo_hash)
 	BLI_ghashIterator_init(&weakinfo_hash_iter, weakinfo_hash);
 
 #ifdef DEBUG_RNA_WEAKREF
-	fprintf(stdout, "id_release_weakref: '%s', %d items\n", id->name, BLI_ghash_size(weakinfo_hash));
+	fprintf(stdout, "id_release_weakref: '%s', %d items\n", id->name, BLI_ghash_len(weakinfo_hash));
 #endif
 
 	while (!BLI_ghashIterator_done(&weakinfo_hash_iter)) {
@@ -266,7 +266,7 @@ static void id_release_weakref_list(struct ID *id, GHash *weakinfo_hash)
 	BLI_ghash_remove(id_weakref_pool, (void *)id, NULL, NULL);
 	BLI_ghash_free(weakinfo_hash, NULL, NULL);
 
-	if (BLI_ghash_size(id_weakref_pool) == 0) {
+	if (BLI_ghash_len(id_weakref_pool) == 0) {
 		BLI_ghash_free(id_weakref_pool, NULL, NULL);
 		id_weakref_pool = NULL;
 #ifdef DEBUG_RNA_WEAKREF
@@ -1419,9 +1419,9 @@ static PyObject *pyrna_enum_to_py(PointerRNA *ptr, PropertyRNA *prop, int val)
 
 					/* prefer not fail silently in case of api errors, maybe disable it later */
 					printf("RNA Warning: Current value \"%d\" "
-						   "matches no enum in '%s', '%s', '%s'\n",
-						   val, RNA_struct_identifier(ptr->type),
-						   ptr_name, RNA_property_identifier(prop));
+					       "matches no enum in '%s', '%s', '%s'\n",
+					       val, RNA_struct_identifier(ptr->type),
+					       ptr_name, RNA_property_identifier(prop));
 
 #if 0				/* gives python decoding errors while generating docs :( */
 					char error_str[256];
@@ -1751,10 +1751,8 @@ static int pyrna_py_to_prop(
 						return -1;
 					}
 					else {
-						/* same as unicode */
-						/* XXX, this is suspect but needed for function calls, need to see if theres a better way */
 						if (data) *((char **)data) = (char *)param;
-						else RNA_property_string_set(ptr, prop, param);
+						else RNA_property_string_set_bytes(ptr, prop, param, PyBytes_Size(value));
 					}
 				}
 				else {
@@ -8258,6 +8256,43 @@ static PyObject *pyrna_unregister_class(PyObject *UNUSED(self), PyObject *py_cla
 
 	Py_RETURN_NONE;
 }
+
+/* Access to 'owner_id' internal global. */
+
+static PyObject *pyrna_bl_owner_id_get(PyObject *UNUSED(self))
+{
+	const char *name = RNA_struct_state_owner_get();
+	if (name) {
+		return PyUnicode_FromString(name);
+	}
+	Py_RETURN_NONE;
+}
+
+static PyObject *pyrna_bl_owner_id_set(PyObject *UNUSED(self), PyObject *value)
+{
+	const char *name;
+	if (value == Py_None) {
+		name = NULL;
+	}
+	else if (PyUnicode_Check(value)) {
+		name = _PyUnicode_AsString(value);
+	}
+	else {
+		PyErr_Format(PyExc_ValueError,
+		             "owner_set(...): "
+		             "expected None or a string, not '%.200s'", Py_TYPE(value)->tp_name);
+		return NULL;
+	}
+	RNA_struct_state_owner_set(name);
+	Py_RETURN_NONE;
+}
+
+PyMethodDef meth_bpy_owner_id_get = {
+	"_bl_owner_id_get", (PyCFunction)pyrna_bl_owner_id_get, METH_NOARGS, NULL,
+};
+PyMethodDef meth_bpy_owner_id_set = {
+	"_bl_owner_id_set", (PyCFunction)pyrna_bl_owner_id_set, METH_O, NULL,
+};
 
 /* currently this is fairly limited, we would need to make some way to split up
  * pyrna_callback_classmethod_... if we want more than one callback per type */

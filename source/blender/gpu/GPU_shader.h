@@ -72,9 +72,6 @@ int GPU_shader_get_program(GPUShader *shader);
 
 void *GPU_shader_get_interface(GPUShader *shader);
 
-void *GPU_fx_shader_get_interface(GPUShader *shader);
-void GPU_fx_shader_set_interface(GPUShader *shader, void *interface);
-
 int GPU_shader_get_uniform(GPUShader *shader, const char *name);
 int GPU_shader_get_builtin_uniform(GPUShader *shader, int builtin);
 int GPU_shader_get_uniform_block(GPUShader *shader, const char *name);
@@ -121,8 +118,11 @@ typedef enum GPUBuiltinShader {
 	GPU_SHADER_2D_UNIFORM_COLOR,
 	GPU_SHADER_2D_FLAT_COLOR,
 	GPU_SHADER_2D_SMOOTH_COLOR,
+	GPU_SHADER_2D_IMAGE,
 	GPU_SHADER_2D_IMAGE_COLOR,
 	GPU_SHADER_2D_IMAGE_ALPHA_COLOR,
+	GPU_SHADER_2D_IMAGE_ALPHA,
+	GPU_SHADER_2D_IMAGE_RECT_COLOR,
 	GPU_SHADER_2D_CHECKER,
 	GPU_SHADER_2D_DIAG_STRIPES,
 	/* for simple 3D drawing */
@@ -139,8 +139,8 @@ typedef enum GPUBuiltinShader {
 	GPU_SHADER_2D_IMAGE_SHUFFLE_COLOR,
 	GPU_SHADER_2D_IMAGE_MASK_UNIFORM_COLOR,
 	GPU_SHADER_3D_IMAGE_MODULATE_ALPHA,
-	GPU_SHADER_3D_IMAGE_RECT_MODULATE_ALPHA,
 	GPU_SHADER_3D_IMAGE_DEPTH,
+	GPU_SHADER_3D_IMAGE_DEPTH_COPY,
 	/* stereo 3d */
 	GPU_SHADER_2D_IMAGE_INTERLACE,
 	/* points */
@@ -177,6 +177,8 @@ typedef enum GPUBuiltinShader {
 	GPU_SHADER_INSTANCE_VARIYING_COLOR_VARIYING_SIZE, /* Uniformly scaled */
 	GPU_SHADER_INSTANCE_VARIYING_COLOR_VARIYING_SCALE,
 	GPU_SHADER_INSTANCE_EDGES_VARIYING_COLOR,
+	/* specialized for widget drawing */
+	GPU_SHADER_2D_WIDGET_BASE,
 
 	/**********Game engine***********/
 	GPU_SHADER_DRAW_FRAME_BUFFER,
@@ -190,7 +192,7 @@ typedef enum GPUBuiltinShader {
 	GPU_SHADER_3D_INSTANCE_BONE_ENVELOPE_SOLID,
 	GPU_SHADER_3D_INSTANCE_BONE_ENVELOPE_WIRE,
 
-	GPU_SHADER_3D_INSTANCE_MBALL_HELPERS,
+	GPU_SHADER_3D_INSTANCE_MBALL_HANDLES,
 
 	GPU_NUM_BUILTIN_SHADERS /* (not an actual shader) */
 } GPUBuiltinShader;
@@ -206,7 +208,6 @@ typedef enum GPUInterlaceShader {
 } GPUInterlaceShader;
 
 GPUShader *GPU_shader_get_builtin_shader(GPUBuiltinShader shader);
-GPUShader *GPU_shader_get_builtin_fx_shader(int effects, bool persp);
 
 void GPU_shader_free_builtin_shaders(void);
 

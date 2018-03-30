@@ -111,15 +111,11 @@ static bool isDisabled(ModifierData *md, int useRenderParams)
 	return false;
 }
 
-static void updateDepsgraph(ModifierData *md,
-                            struct Main *UNUSED(bmain),
-                            struct Scene *UNUSED(scene),
-                            Object *UNUSED(ob),
-                            struct DepsNodeHandle *node)
+static void updateDepsgraph(ModifierData *md, const ModifierUpdateDepsgraphContext *ctx)
 {
 	ParticleInstanceModifierData *pimd = (ParticleInstanceModifierData *) md;
 	if (pimd->ob != NULL) {
-		DEG_add_object_relation(node, pimd->ob, DEG_OB_COMP_TRANSFORM, "Particle Instance Modifier");
+		DEG_add_object_relation(ctx->node, pimd->ob, DEG_OB_COMP_TRANSFORM, "Particle Instance Modifier");
 	}
 }
 
@@ -220,7 +216,7 @@ static DerivedMesh *applyModifier(ModifierData *md, const struct EvaluationConte
 
 	if (pimd->flag & eParticleInstanceFlag_UseSize) {
 		float *si;
-		si = size = MEM_callocN(totpart * sizeof(float), "particle size array");
+		si = size = MEM_calloc_arrayN(totpart, sizeof(float), "particle size array");
 
 		if (pimd->flag & eParticleInstanceFlag_Parents) {
 			for (p = 0, pa = psys->particles; p < psys->totpart; p++, pa++, si++)

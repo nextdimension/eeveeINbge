@@ -89,6 +89,7 @@ set(SRC
 	intern/cloth.c
 	intern/collection.c
 	intern/collision.c
+	intern/colorband.c
 	intern/colortools.c
 	intern/constraint.c
 	intern/context.c
@@ -102,6 +103,7 @@ set(SRC
 	intern/displist.c
 	intern/dynamicpaint.c
 	intern/editderivedmesh.c
+	intern/editlattice.c
 	intern/editmesh.c
 	intern/editmesh_bvh.c
 	intern/editmesh_tangent.c
@@ -225,6 +227,7 @@ set(SRC
 	BKE_cloth.h
 	BKE_collection.h
 	BKE_collision.h
+	BKE_colorband.h
 	BKE_colortools.h
 	BKE_constraint.h
 	BKE_context.h
@@ -236,6 +239,7 @@ set(SRC
 	BKE_deform.h
 	BKE_displist.h
 	BKE_dynamicpaint.h
+	BKE_editlattice.h
 	BKE_editmesh.h
 	BKE_editmesh_bvh.h
 	BKE_editmesh_tangent.h
@@ -313,6 +317,7 @@ set(SRC
 
 	nla_private.h
 	tracking_private.h
+	particle_private.h
 	intern/CCGSubSurf.h
 	intern/CCGSubSurf_inline.h
 	intern/CCGSubSurf_intern.h

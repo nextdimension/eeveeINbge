@@ -85,6 +85,7 @@ static FontBLF *global_font[BLF_MAX_FONT] = {NULL};
 static int global_font_default = -1;
 static int global_font_points = 11;
 static int global_font_dpi = 72;
+static bool global_use_antialias = true;
 
 /* XXX, should these be made into global_font_'s too? */
 int blf_mono_font = -1;
@@ -180,6 +181,16 @@ int BLF_default(void)
 {
 	ASSERT_DEFAULT_SET;
 	return global_font_default;
+}
+
+void BLF_antialias_set(bool enabled)
+{
+	global_use_antialias = enabled;
+}
+
+bool BLF_antialias_get(void)
+{
+	return global_use_antialias;
 }
 
 int BLF_load(const char *name)
@@ -551,7 +562,7 @@ static void blf_draw_gl__start(FontBLF *font)
 	 */
 
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 	gpuPushMatrix();
 
@@ -568,9 +579,9 @@ static void blf_draw_gl__start(FontBLF *font)
 
 #ifndef BLF_STANDALONE
 	Gwn_VertFormat *format = immVertexFormat();
-	unsigned int pos = GWN_vertformat_attr_add(format, "pos", GWN_COMP_F32, 2, GWN_FETCH_FLOAT);
-	unsigned int texCoord = GWN_vertformat_attr_add(format, "texCoord", GWN_COMP_F32, 2, GWN_FETCH_FLOAT);
-	unsigned int color = GWN_vertformat_attr_add(format, "color", GWN_COMP_U8, 4, GWN_FETCH_INT_TO_FLOAT_UNIT);
+	unsigned int pos = GWN_vertformat_attr_add(format, "pos", GWN_COMP_F32, 4, GWN_FETCH_FLOAT);
+	unsigned int texCoord = GWN_vertformat_attr_add(format, "tex", GWN_COMP_F32, 4, GWN_FETCH_FLOAT);
+	unsigned int color = GWN_vertformat_attr_add(format, "col", GWN_COMP_U8, 4, GWN_FETCH_INT_TO_FLOAT_UNIT);
 
 	BLI_assert(pos == BLF_POS_ID);
 	BLI_assert(texCoord == BLF_COORD_ID);
