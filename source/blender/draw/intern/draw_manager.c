@@ -2292,6 +2292,10 @@ GPUTexture *DRW_game_render_loop(Main *bmain, Scene *scene, Object *maincam, Eva
 		DEG_ITER_OBJECT_FLAG_LINKED_VIA_SET |
 		DEG_ITER_OBJECT_FLAG_DUPLI)
 	{
+		bool is_invisibled = (ob->base_flag & BASE_VISIBLED) != 0;
+		if (is_invisibled) {
+			ob->base_flag |= BASE_VISIBLED;
+		}
 		drw_engines_cache_populate(ob);
 	}
 	DEG_OBJECT_ITER_END

@@ -102,6 +102,8 @@ extern "C" {
 #  include "BLI_listbase.h"
 #  include "windowmanager/WM_types.h"
 }
+
+#include "KX_BlenderConverter.h"
 /* End of eevee integration */
 
 static MT_Vector3 dummy_point= MT_Vector3(0.0f, 0.0f, 0.0f);
@@ -231,7 +233,7 @@ void KX_GameObject::AddMaterialBatches()
 	/* Get per-material split surface */
 	Object *ob = GetBlenderObject();
 
-	if (ob->type != OB_MESH) {
+	if (!ob || !ELEM(ob->type, OB_MESH, OB_CURVE, OB_FONT)) {
 		return;
 	}
 
@@ -263,7 +265,7 @@ std::vector<Gwn_Batch *>KX_GameObject::GetMaterialBatches()
 /* GET + CREATE IF DOESN'T EXIST */
 std::vector<DRWShadingGroup *>KX_GameObject::GetMaterialShadingGroups()
 {
-	/*if (m_materialShGroups.size() > 0) {
+	if (m_materialShGroups.size() > 0) {
 		return m_materialShGroups;
 	}
 	KX_Scene *scene = GetScene();
@@ -271,20 +273,24 @@ std::vector<DRWShadingGroup *>KX_GameObject::GetMaterialShadingGroups()
 	for (DRWPass *pass : allPasses) {
 		DRWShadingGroup *shgroups = DRW_shgroups_from_pass_get(pass);
 		for (DRWShadingGroup *shgroup = DRW_shgroups_from_pass_get(pass); shgroup; shgroup = DRW_shgroup_next(shgroup)) {
-			std::vector<DRWShadingGroup *>::iterator it = std::find(m_materialShGroups.begin(), m_materialShGroups.end(), shgroup);
-			if (it != m_materialShGroups.end()) {
-				continue;
-			}
-			for (Gwn_Batch *batch : m_materialBatches) {
+			for (Gwn_Batch *batch : GetMaterialBatches()) {
 				if (DRW_batch_belongs_to_gameobject(shgroup, batch)) {
+					std::vector<std::pair<DRWShadingGroup *, Gwn_Batch *>>::iterator it2 
+						= std::find(m_shGroupsBatchesPairs.begin(), m_shGroupsBatchesPairs.end(), std::pair<DRWShadingGroup *, Gwn_Batch *>(shgroup, batch));
+					if (it2 != m_shGroupsBatchesPairs.end()) {
+						continue;
+					}
+					m_shGroupsBatchesPairs.push_back({ shgroup, batch });
+					std::vector<DRWShadingGroup *>::iterator it = std::find(m_materialShGroups.begin(), m_materialShGroups.end(), shgroup);
+					if (it != m_materialShGroups.end()) {
+						continue;
+					}
 					m_materialShGroups.push_back(shgroup);
-					break;
 				}
 			}
 		}
 	}
-	return m_materialShGroups;*/
-	return {};
+	return m_materialShGroups;
 }
 
 /* Use for EndObject + to discard batches in inactive layers/scenes at BlenderDataConversion + for culling */
@@ -612,6 +618,19 @@ void KX_GameObject::SetPlayMode(short layer, short mode)
 void KX_GameObject::ProcessReplica()
 {
 	SCA_IObject::ProcessReplica();
+
+	Object *ob = GetBlenderObject();
+	if (ob && ELEM(ob->type, OB_MESH, OB_CURVE, OB_FONT)) {
+		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
+		Object *newob = BKE_object_copy(bmain, ob);
+
+		m_pBlenderObject = newob;
+		for (int i = 0; i < m_shGroupsBatchesPairs.size(); i++) {
+			DRWShadingGroup *shgroup = m_shGroupsBatchesPairs.at(i).first;
+			Gwn_Batch *batch = m_shGroupsBatchesPairs.at(i).second;
+			DRW_shgroup_call_object_add(shgroup, batch, m_pBlenderObject);
+		}
+	}
 
 	m_pGraphicController = nullptr;
 	m_pPhysicsController = nullptr;

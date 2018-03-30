@@ -317,7 +317,7 @@ bool ImageRender::Render()
 
 	m_engine->UpdateAnimations(m_scene);
 
-	m_scene->RenderAfterCameraSetup(m_rasterizer);
+	m_scene->RenderAfterCameraSetup(m_rasterizer, false);
 
 	m_canvas->EndFrame();
 

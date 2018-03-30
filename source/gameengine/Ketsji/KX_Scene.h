@@ -145,16 +145,14 @@ private:
 protected:
 
 	/***************EEVEE INTEGRATION*****************/
-	bool m_dofInitialized;
-	bool m_taaInitialized;
-
-	bool m_doingTAA;
-	bool m_doingProbeUpdate;
 
 	std::vector<KX_GameObject *>m_staticObjects;
 
 	std::vector<DRWPass *>m_materialPasses;
 	std::vector<KX_GameObject *>m_lightProbes;
+
+	bool m_passesInitialized;
+	bool m_gameobjShadersInitialized;
 	/*************************************************/
 
 	RAS_BucketManager*	m_bucketmanager;
@@ -352,7 +350,7 @@ public:
 	std::vector<KX_GameObject *>GetProbeList();
 
 	bool ObjectsAreStatic();
-	void RenderAfterCameraSetup(RAS_Rasterizer *rasty);
+	void RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromConstructor);
 	/***************End of EEVEE INTEGRATION**********************/
 
 	RAS_BucketManager* GetBucketManager() const;

@@ -180,10 +180,8 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_blenderScene(scene),
 	m_isActivedHysteresis(false),
 	m_lodHysteresisValue(0),
-	m_dofInitialized(false),
-	m_doingProbeUpdate(false),
-	m_doingTAA(false),
-	m_taaInitialized(false)
+	m_passesInitialized(false), // eevee
+	m_gameobjShadersInitialized(false) // eevee
 {
 
 	m_dbvt_culling = false;
@@ -242,7 +240,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	/*************************************************EEVEE INTEGRATION***********************************************************/
 	m_staticObjects = {};
 
-	RenderAfterCameraSetup(KX_GetActiveEngine()->GetRasterizer()); // Init eevee data in scene constructor
+	RenderAfterCameraSetup(KX_GetActiveEngine()->GetRasterizer(), true); // Init eevee data in scene constructor
 	/******************************************************************************************************************************/
 
 #ifdef WITH_PYTHON
@@ -393,7 +391,7 @@ bool KX_Scene::ObjectsAreStatic()
 
 /****CALL RENDER MAINLOOP*********/
 
-void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty)
+void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromContructor)
 {
 	/* Update blenderobjects matrix as we use it for eevee's shadows */
 	for (KX_GameObject *gameobj : GetObjectList()) {
@@ -436,9 +434,22 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty)
 
 	DRW_transform_to_display(finaltex);
 
+	if (m_passesInitialized && !m_gameobjShadersInitialized) {
+		for (KX_GameObject *gameobj : GetObjectList()) {
+			gameobj->GetMaterialShadingGroups();
+		}
+		m_gameobjShadersInitialized = true;
+	}
+
+	if (calledFromContructor) {
+		InitScenePasses(EEVEE_engine_data_get()->psl);
+		m_passesInitialized = true;
+	}
+
+
 	DRW_game_render_loop_finish();
 
-	if (cam) {
+	if (!calledFromContructor) {
 		engine->EndFrame();
 	}
 
@@ -1075,16 +1086,6 @@ KX_GameObject *KX_Scene::AddReplicaObject(KX_GameObject *originalobject, KX_Game
 	}
 	for (KX_GameObject *gameobj : duplilist) {
 		DupliGroupRecurse(gameobj, 0);
-	}
-
-	/* This is to duplicate gaiwan batches and add it to eevee psl
-	 * Only useful if we choose to draw the scene with eevee render.
-	 * I think in this case we'd need to remove graphic controller.
-	 */
-	if (replica->GetMaterialBatches().size() > 0) {
-		float obmat[4][4];
-		replica->NodeGetWorldTransform().getValue(&obmat[0][0]);
-		replica->AddNewMaterialBatchesToPasses(obmat);
 	}
 
 	//	don't release replica here because we are returning it, not done with it...

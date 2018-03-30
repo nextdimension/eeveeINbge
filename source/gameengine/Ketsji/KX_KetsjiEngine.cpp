@@ -901,7 +901,7 @@ void KX_KetsjiEngine::RenderCamera(KX_Scene *scene, const CameraRenderData& came
 	scene->RunDrawingCallbacks(KX_Scene::PRE_DRAW, rendercam);
 #endif
 
-	scene->RenderAfterCameraSetup(m_rasterizer);
+	scene->RenderAfterCameraSetup(m_rasterizer, false);
 
 	//if (scene->GetPhysicsEnvironment())
 		//scene->GetPhysicsEnvironment()->DebugDrawWorld();

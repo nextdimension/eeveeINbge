@@ -1312,11 +1312,6 @@ static void bl_ConvertBlenderObject_Single(
 
 	logicbrick_conversionlist->Add(CM_AddRef(gameobj));
 
-	/* This adds display arrays (Gwn_Batch) to draw with eevee code
-	 * Here we add batches for all game objects (active/inactive).
-	 */
-	gameobj->AddMaterialBatches();
-
 	if (isInActiveLayer)
 	{
 		objectlist->Add(CM_AddRef(gameobj));

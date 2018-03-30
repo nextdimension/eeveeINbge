@@ -932,3 +932,23 @@ void DRW_pass_sort_shgroup_z(DRWPass *pass)
 }
 
 /** \} */
+
+
+/*******************************Game engine transition**********************************/
+DRWShadingGroup *DRW_shgroups_from_pass_get(DRWPass *pass)
+{
+	return pass->shgroups.first;
+}
+DRWShadingGroup *DRW_shgroup_next(DRWShadingGroup *current)
+{
+	return current->next;
+}
+bool DRW_batch_belongs_to_gameobject(DRWShadingGroup *shgroup, struct Gwn_Batch *batch)
+{
+	for (DRWCall *call = shgroup->calls.first; call; call = call->next) {
+		if (call->single.geometry == batch || call->instances.geometry == batch) {
+			return true;
+		}
+	}
+	return false;
+}

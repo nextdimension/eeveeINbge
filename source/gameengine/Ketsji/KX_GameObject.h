@@ -91,6 +91,9 @@ protected:
 	std::vector<Gwn_Batch *>m_materialBatches;
 	std::vector<DRWShadingGroup *>m_materialShGroups;
 
+
+	std::vector<std::pair<DRWShadingGroup *, Gwn_Batch *>> m_shGroupsBatchesPairs;
+
 	float m_savedObmat[4][4];
 	float m_prevObmat[4][4];
 
