@@ -318,9 +318,6 @@ private:
 
 	std::unique_ptr<RAS_OpenGLRasterizer> m_impl;
 
-	void InitScreenShaders();
-	void ExitScreenShaders();
-
 public:
 	RAS_Rasterizer();
 	virtual ~RAS_Rasterizer();

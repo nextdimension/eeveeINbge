@@ -239,8 +239,6 @@ bool BPY_string_is_keyword(const char *str) { return false; }
 /* -------------------------------------------------------------------- */
 /* Stubs */
 
-void DRW_deferred_shader_remove(struct GPUMaterial *mat) RET_NONE
-
 /*new render funcs */
 void EDBM_selectmode_set(struct BMEditMesh *em) RET_NONE
 void EDBM_mesh_load(struct Object *ob) RET_NONE
@@ -254,6 +252,7 @@ float RE_filter_value(int type, float x) RET_ZERO
 struct RenderLayer *RE_GetRenderLayer(struct RenderResult *rr, const char *name) RET_NULL
 void RE_texture_rng_init() RET_NONE
 void RE_texture_rng_exit() RET_NONE
+const char *RE_GetActiveRenderView(struct Render *re) RET_NULL
 
 bool RE_layers_have_name(struct RenderResult *result) RET_ZERO
 const char *RE_engine_active_view_get(struct RenderEngine *engine) RET_NULL
@@ -297,6 +296,8 @@ const float (*RE_object_instance_get_matrix(struct ObjectInstanceRen *obi, int m
 const float (*RE_render_current_get_matrix(int matrix_id))[4] RET_NULL
 float RE_object_instance_get_object_pass_index(struct ObjectInstanceRen *obi) RET_ZERO
 float RE_object_instance_get_random_id(struct ObjectInstanceRen *obi) RET_ZERO
+void RE_GetCameraWindow(struct Render *re, struct Object *camera, int frame, float mat[4][4]) RET_NONE
+void RE_GetCameraModelMatrix(struct Render *re, struct Object *camera, float r_mat[4][4]) RET_NONE
 
 /* blenkernel */
 bool BKE_paint_proj_mesh_data_check(struct Scene *scene, struct Object *ob, bool *uvs, bool *mat, bool *tex, bool *stencil) RET_ZERO
@@ -321,6 +322,9 @@ void RE_SwapResult(struct Render *re, struct RenderResult **rr) RET_NONE
 void RE_BlenderFrame(struct Render *re, struct Main *bmain, struct Scene *scene, struct ViewLayer *view_layer, struct Object *camera_override, unsigned int lay_override, int frame, const bool write_still) RET_NONE
 bool RE_WriteEnvmapResult(struct ReportList *reports, struct Scene *scene, struct EnvMap *env, const char *relpath, const char imtype, float layout[12]) RET_ZERO
 
+
+void RE_GetViewPlane(struct Render *re, struct rctf *r_viewplane, struct rcti *r_disprect) RET_NONE
+
 /* rna */
 float *ED_view3d_cursor3d_get(struct Scene *scene, struct View3D *v3d) RET_NULL
 void WM_menutype_free(void) RET_NONE
@@ -342,6 +346,12 @@ void WM_window_change_active_scene(struct Main *bmain, struct bContext *C, struc
 bool WM_window_is_temp_screen(const struct wmWindow *win) RET_ZERO
 void wmOrtho2_region_pixelspace(const struct ARegion *ar) RET_NONE
 
+void *WM_opengl_context_create(void) RET_NULL
+void WM_opengl_context_dispose(void *context) RET_NONE
+void WM_opengl_context_activate(void *context) RET_NONE
+void WM_opengl_context_release(void *context) RET_NONE
+void wm_window_reset_drawable(void) RET_NONE
+
 void WM_autosave_init(wmWindowManager *wm) RET_NONE
 void WM_jobs_kill_all_except(struct wmWindowManager *wm, void *owner) RET_NONE
 
@@ -359,6 +369,10 @@ void WM_cursor_modal_set(struct wmWindow *win, int curor) RET_NONE
 void WM_cursor_modal_restore(struct wmWindow *win) RET_NONE
 void WM_cursor_time(struct wmWindow *win, int nr) RET_NONE
 void WM_cursor_warp(struct wmWindow *win, int x, int y) RET_NONE
+
+
+bool        WM_jobs_test(struct wmWindowManager *wm, void *owner, int job_type) RET_ZERO
+void       *WM_jobs_customdata_get(struct wmJob *job) RET_NULL
 
 struct wmJob *WM_jobs_get(struct wmWindowManager *wm, struct wmWindow *win, void *owner, const char *name, int flag, int job_type) RET_NULL
 void WM_jobs_customdata_set(struct wmJob *job, void *customdata, void (*free)(void *)) RET_NONE
@@ -555,6 +569,9 @@ void ED_view3d_quadview_update(struct ScrArea *sa, struct ARegion *ar, bool do_c
 void ED_view3d_from_m4(float mat[4][4], float ofs[3], float quat[4], float *dist) RET_NONE
 eV3DProjStatus ED_view3d_project_short_ex(const struct ARegion *ar, float perspmat[4][4], const bool is_local,
                                           const float co[3], short r_co[2], const eV3DProjTest flag) RET_ZERO
+eV3DProjStatus ED_view3d_project_int_global(const struct ARegion *ar, const float co[3], int r_co[2], const eV3DProjTest flag) RET_ZERO
+void ED_view3d_draw_bgpic_test(struct Scene *scene, const struct Depsgraph *depsgraph, struct ARegion *ar, struct View3D *v3d, const bool do_foreground, const bool do_camera_frame) RET_NONE
+
 void ED_view3d_update_viewmat(const struct EvaluationContext *eval_ctx, struct Scene *scene, struct View3D *v3d, struct ARegion *ar, float viewmat[4][4], float winmat[4][4], const struct rcti *rect) RET_NONE
 float ED_view3d_grid_scale(struct Scene *scene, struct View3D *v3d, const char **grid_unit) RET_ZERO
 void ED_view3d_shade_update(struct Main *bmain, struct View3D *v3d, struct ScrArea *sa) RET_NONE

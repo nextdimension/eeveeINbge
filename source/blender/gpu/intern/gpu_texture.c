@@ -1064,3 +1064,10 @@ int GPU_texture_detach_framebuffer(GPUTexture *tex, GPUFrameBuffer *fb)
 	BLI_assert(!"Error: Texture: Framebuffer is not attached");
 	return 0;
 }
+
+
+/******************************Game engine transition****************************/
+void GPU_texture_set_opengl_bindcode(GPUTexture *tex, int bindcode)
+{
+	tex->bindcode = bindcode;
+}

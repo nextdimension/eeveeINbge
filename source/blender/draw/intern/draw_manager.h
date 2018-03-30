@@ -42,6 +42,12 @@
 
 #include "draw_instance_data.h"
 
+
+
+#include "../draw/engines/eevee/eevee_private.h" // ge transition (was a dirt compil fix for DRWMatrixState transfered in eevee_private.h)
+
+
+
 /* Use draw manager to call GPU_select, see: DRW_draw_select_loop */
 #define USE_GPU_SELECT
 
@@ -292,6 +298,7 @@ typedef struct DRWManager {
 		unsigned int is_image_render : 1;
 		unsigned int is_scene_render : 1;
 		unsigned int draw_background : 1;
+		unsigned int game_engine : 1;
 	} options;
 
 	/* Current rendering context */

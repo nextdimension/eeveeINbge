@@ -89,12 +89,10 @@ protected:
 
 
 	std::vector<Gwn_Batch *>m_materialBatches;
-	std::vector<Gwn_Batch *>m_newBatches;
 	std::vector<DRWShadingGroup *>m_materialShGroups;
 
 	float m_savedObmat[4][4];
 	float m_prevObmat[4][4];
-	bool m_needShadowUpdate; // used for shadow culling
 
 
 
@@ -149,12 +147,9 @@ public:
 	
 	void DiscardMaterialBatches();
 	void RestoreMaterialBatches(float obmat[4][4]);
-	void DuplicateMaterialBatches();
 	void AddNewMaterialBatchesToPasses(float obmat[4][4]);
 
 	void TagForUpdate();
-	bool NeedShadowUpdate();
-	bool m_wasculled;
 
 
 

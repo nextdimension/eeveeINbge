@@ -26,6 +26,8 @@
 #ifndef __EEVEE_PRIVATE_H__
 #define __EEVEE_PRIVATE_H__
 
+#include "DNA_object_types.h" //ge transition
+
 struct Object;
 struct EEVEE_BoundSphere;
 struct EEVEE_ShadowCasterBuffer;
@@ -131,6 +133,10 @@ enum {
 	SHADOW_VSM = 2,
 	SHADOW_METHOD_MAX = 3,
 };
+
+typedef struct DRWMatrixState {
+	float mat[6][4][4]; //ge transition
+} DRWMatrixState;
 
 typedef struct EEVEE_BoundSphere {
 	float center[3], radius;
@@ -296,7 +302,7 @@ typedef struct EEVEE_Light {
 } EEVEE_Light;
 
 typedef struct EEVEE_Shadow {
-	float near, far, bias, exp;
+	float nearf, farf, bias, exp; // ge transition near and far c++ keywords (renamed)
 	float shadow_start, data_start, multi_shadow_count, shadow_blur;
 	float contact_dist, contact_bias, contact_spread, contact_thickness;
 } EEVEE_Shadow;
@@ -948,5 +954,15 @@ static const float cubefacemat[6][4][4] = {
 	 {0.0f, 0.0f, 1.0f, 0.0f},
 	 {0.0f, 0.0f, 0.0f, 1.0f}},
 };
+
+
+
+/*********************************Game engine transition********************/
+EEVEE_Data *EEVEE_engine_data_get();
+
+struct GPUTexture *DRW_game_render_loop(struct Main *bmain, struct Scene *scene, struct Object *maincam, struct EvaluationContext *eval_ctx, int v[4],
+	struct DRWMatrixState state, bool reset_taa_samples, bool first_run, int viewport_size[2]);
+void DRW_game_render_loop_finish(void);
+void DRW_game_render_loop_end(void);
 
 #endif /* __EEVEE_PRIVATE_H__ */

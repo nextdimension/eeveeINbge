@@ -125,4 +125,7 @@ GPUTexture *GPU_viewport_texture_pool_query(GPUViewport *viewport, void *engine,
 bool GPU_viewport_engines_data_validate(GPUViewport *viewport, unsigned int hash);
 void GPU_viewport_cache_release(GPUViewport *viewport);
 
+/**************Game engine transition*********************/
+void GPU_viewport_clear_users_bge(GPUViewport *viewport);
+
 #endif // __GPU_VIEWPORT_H__

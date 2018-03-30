@@ -142,7 +142,6 @@
 #include "DNA_key_types.h"
 #include "DNA_armature_types.h"
 #include "DNA_action_types.h"
-#include "DNA_object_force.h"
 #include "DNA_constraint_types.h"
 #include "DNA_layer_types.h"
 
@@ -154,6 +153,7 @@
 #include "BLI_math.h"
 
 extern "C" {
+#include "BKE_group.h"
 #include "BKE_scene.h"
 #include "BKE_customdata.h"
 #include "BKE_cdderivedmesh.h"
@@ -1174,6 +1174,7 @@ static ListBase *get_active_constraints2(Object *ob)
 		return nullptr;
 
   // XXX - shouldnt we care about the pose data and not the mode???
+#if 0
 	if (ob->mode & OB_MODE_POSE) { 
 		bPoseChannel *pchan;
 
@@ -1181,8 +1182,11 @@ static ListBase *get_active_constraints2(Object *ob)
 		if (pchan)
 			return &pchan->constraints;
 	}
-	else 
+	else
+#endif
+	{
 		return &ob->constraints;
+	}
 
 	return nullptr;
 }
@@ -1507,9 +1511,8 @@ void BL_ConvertBlenderObjects(struct Main* maggie,
 			for (git=tempglist.begin(); git!=tempglist.end(); git++)
 			{
 				Group* group = *git;
-				FOREACH_GROUP_OBJECT(group, blenderobject)
+				FOREACH_GROUP_OBJECT_BEGIN(group, blenderobject)
 				{
-					Object* blenderobject = go->ob;
 					if (converter.FindGameObject(blenderobject) == nullptr)
 					{
 						allblobj.insert(blenderobject);
@@ -1544,7 +1547,7 @@ void BL_ConvertBlenderObjects(struct Main* maggie,
 						}
 					}
 				}
-				FOREACH_GROUP_OBJECT_END
+				FOREACH_GROUP_OBJECT_END;
 			}
 		}
 	}

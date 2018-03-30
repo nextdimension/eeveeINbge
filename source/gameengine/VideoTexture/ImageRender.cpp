@@ -135,7 +135,7 @@ void ImageRender::calcViewport (unsigned int texId, double ts, unsigned int form
 
 	GPU_framebuffer_restore();
 
-	DRW_transform_to_display(EEVEE_engine_data_get()->stl->effects->source_buffer);
+	//DRW_transform_to_display(EEVEE_engine_data_get()->stl->effects->source_buffer);
 }
 
 bool ImageRender::Render()
@@ -317,7 +317,7 @@ bool ImageRender::Render()
 
 	m_engine->UpdateAnimations(m_scene);
 
-	m_scene->RenderBucketsNew(nodes, m_rasterizer);
+	m_scene->RenderAfterCameraSetup(m_rasterizer);
 
 	m_canvas->EndFrame();
 

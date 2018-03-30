@@ -100,6 +100,7 @@ extern "C" {
 #  include "GPU_immediate.h"
 #  include "eevee_private.h"
 #  include "BLI_listbase.h"
+#  include "windowmanager/WM_types.h"
 }
 /* End of eevee integration */
 
@@ -129,8 +130,6 @@ KX_GameObject::KX_GameObject(
       m_cullingNode(this),
       m_pInstanceObjects(nullptr),
       m_pDupliGroupObject(nullptr),
-	  m_wasculled(false), // eevee integration
-	  m_needShadowUpdate(true), // eevee integration
       m_actionManager(nullptr)
 #ifdef WITH_PYTHON
     , m_attr_dict(nullptr),
@@ -264,7 +263,7 @@ std::vector<Gwn_Batch *>KX_GameObject::GetMaterialBatches()
 /* GET + CREATE IF DOESN'T EXIST */
 std::vector<DRWShadingGroup *>KX_GameObject::GetMaterialShadingGroups()
 {
-	if (m_materialShGroups.size() > 0) {
+	/*if (m_materialShGroups.size() > 0) {
 		return m_materialShGroups;
 	}
 	KX_Scene *scene = GetScene();
@@ -284,55 +283,44 @@ std::vector<DRWShadingGroup *>KX_GameObject::GetMaterialShadingGroups()
 			}
 		}
 	}
-	return m_materialShGroups;
+	return m_materialShGroups;*/
+	return {};
 }
 
 /* Use for EndObject + to discard batches in inactive layers/scenes at BlenderDataConversion + for culling */
 void KX_GameObject::DiscardMaterialBatches()
 {
-	for (Gwn_Batch *b : m_materialBatches) {
+	/*for (Gwn_Batch *b : m_materialBatches) {
 		for (DRWShadingGroup *sh : GetMaterialShadingGroups()) {
 			if (DRW_batch_belongs_to_gameobject(sh, b)) {
 				DRW_call_discard_geometry(sh, b);
 			}
 		}
-	}
+	}*/
 }
 
 /* Used to "uncull" discarded batches */
 void KX_GameObject::RestoreMaterialBatches(float obmat[4][4])
 {
-	for (DRWShadingGroup *sh : GetMaterialShadingGroups()) {
+	/*for (DRWShadingGroup *sh : GetMaterialShadingGroups()) {
 		for (int i = 0; i < m_materialBatches.size(); i++) {
 			DRW_call_restore_geometry(sh, m_materialBatches[i], obmat);
 		}
-	}
-}
-
-/* Use for AddObject */
-void KX_GameObject::DuplicateMaterialBatches()
-{
-	std::vector<Gwn_Batch *>newBatches;
-	for (Gwn_Batch *b : m_materialBatches) {
-		Gwn_Batch *newBatch = GWN_batch_create_from_batch_ex(b);
-		newBatches.push_back(newBatch);
-	}
-	m_newBatches = newBatches;
+	}*/
 }
 
 /* Use for AddObject */
 void KX_GameObject::AddNewMaterialBatchesToPasses(float obmat[4][4]) // works in pair with DuplicateMaterialBatches()
 {
-	for (DRWShadingGroup *shgroup : m_materialShGroups) {
+	/*for (DRWShadingGroup *shgroup : m_materialShGroups) {
 		for (int i = 0; i < m_materialBatches.size(); i++) {
 			Gwn_Batch *oldBatch = m_materialBatches[i];
 			if (DRW_batch_belongs_to_gameobject(shgroup, oldBatch)) {
-				DRW_shgroup_call_add(shgroup, m_newBatches[i], obmat);
+				DRW_shgroup_call_add(shgroup, oldBatch, obmat);
 			}
 		}
 	}
-	m_materialBatches.clear();
-	m_materialBatches = m_newBatches;
+	m_materialBatches.clear();*/
 }
 
 /************************END OF EEVEE INTEGRATION******************************/
@@ -852,27 +840,21 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 	NodeGetWorldTransform().getValue(&obmat[0][0]);
 	bool staticObject = compare_m4m4(m_prevObmat, obmat, FLT_MIN);
 
-	m_needShadowUpdate = false;
 	if (staticObject) {
 		GetScene()->AppendToStaticObjects(this);
-		if (!GetCulled()) {
-			GetScene()->AppendToStaticObjectsInsideFrustum(this);
-		}
 	}
 	else {
-		for (Gwn_Batch *batch : m_materialBatches) {
-			for (DRWShadingGroup *sh : GetMaterialShadingGroups()) {
-				DRW_call_update_obmat(sh, batch, obmat);
-			}
+		Object *blendobj = GetBlenderObject();
+		if (!blendobj)
+			blendobj = m_pBlenderObject;
+		if (blendobj) {
+			copy_m4_m4(blendobj->obmat, obmat);
+			/* Making sure it's updated. (To move volumes) */
+			invert_m4_m4(blendobj->imat, blendobj->obmat);
+			DEG_id_tag_update(&blendobj->id, NC_OBJECT | ND_TRANSFORM);
 		}
-		m_needShadowUpdate = true;
 	}
 	copy_m4_m4(m_prevObmat, obmat);
-}
-
-bool KX_GameObject::NeedShadowUpdate() // used for shadow culling
-{
-	return m_needShadowUpdate;
 }
 
 /********************End of EEVEE INTEGRATION*********************/

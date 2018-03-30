@@ -57,7 +57,7 @@
 
 #include "RE_engine.h"
 
-#include "DEG_depsgraph.h"
+#include "../depsgraph/DEG_depsgraph.h"
 
 struct rcti;
 struct bContext;
@@ -397,15 +397,11 @@ typedef enum {
 	DRW_MAT_COUNT, // Don't use this.
 } DRWViewportMatrixType;
 
-typedef struct DRWMatrixState {
-	float mat[DRW_MAT_COUNT][4][4];
-} DRWMatrixState;
-
 void DRW_viewport_init(const bContext *C);
 void DRW_viewport_matrix_get(float mat[4][4], DRWViewportMatrixType type);
-void DRW_viewport_matrix_get_all(DRWMatrixState *state);
+void DRW_viewport_matrix_get_all(struct DRWMatrixState *state);
 void DRW_viewport_matrix_override_set(float mat[4][4], DRWViewportMatrixType type);
-void DRW_viewport_matrix_override_set_all(DRWMatrixState *state);
+void DRW_viewport_matrix_override_set_all(struct DRWMatrixState *state);
 void DRW_viewport_matrix_override_unset(DRWViewportMatrixType type);
 void DRW_viewport_matrix_override_unset_all(void);
 
@@ -526,16 +522,19 @@ typedef struct DRWContextState {
 const DRWContextState *DRW_context_state_get(void);
 
 /*****************************GAME ENGINE***********************************/
-void *DRW_viewport_engine_data_ensure(void *engine_type);
-struct GPUShader *DRW_shgroup_shader_get(DRWShadingGroup *shgroup);
-void DRW_bind_shader_shgroup(DRWShadingGroup *shgroup);
-void DRW_end_shgroup(void);
-DRWShadingGroup *DRW_shgroups_from_pass_get(DRWPass *pass);
-DRWShadingGroup *DRW_shgroup_next(DRWShadingGroup *current);
-void DRW_call_update_obmat(DRWShadingGroup *shgroup, struct Gwn_Batch *batch, float obmat[4][4]);
-void DRW_call_discard_geometry(DRWShadingGroup *shgroup, struct Gwn_Batch *batch);
-void DRW_call_restore_geometry(DRWShadingGroup *shgroup, struct Gwn_Batch *batch, float obmat[4][4]);
-bool DRW_batch_belongs_to_gameobject(DRWShadingGroup *shgroup, struct Gwn_Batch *batch);
+//struct GPUShader *DRW_shgroup_shader_get(DRWShadingGroup *shgroup);
+//void DRW_bind_shader_shgroup(DRWShadingGroup *shgroup);
+//void DRW_end_shgroup(void);
+//DRWShadingGroup *DRW_shgroups_from_pass_get(DRWPass *pass);
+//DRWShadingGroup *DRW_shgroup_next(DRWShadingGroup *current);
+//void DRW_call_update_obmat(DRWShadingGroup *shgroup, struct Gwn_Batch *batch, float obmat[4][4]);
+//void DRW_call_discard_geometry(DRWShadingGroup *shgroup, struct Gwn_Batch *batch);
+//void DRW_call_restore_geometry(DRWShadingGroup *shgroup, struct Gwn_Batch *batch, float obmat[4][4]);
+//bool DRW_batch_belongs_to_gameobject(DRWShadingGroup *shgroup, struct Gwn_Batch *batch);
+
+
+
+bool DRW_state_is_game_engine(void);
 /**************************END OF GAME ENGINE*******************************/
 
 #endif /* __DRW_RENDER_H__ */

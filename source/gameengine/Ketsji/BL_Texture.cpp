@@ -35,6 +35,7 @@
 
 extern "C" {
 #  include "gpu/intern/gpu_codegen.h"
+#  include "GPU_texture.h"
 }
 
 BL_Texture::BL_Texture(GPUInput *input)

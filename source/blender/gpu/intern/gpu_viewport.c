@@ -634,3 +634,10 @@ void GPU_viewport_free(GPUViewport *viewport)
 
 	MEM_freeN(viewport);
 }
+
+
+/***********************Game engine transition**********************/
+void GPU_viewport_clear_users_bge(GPUViewport *viewport)
+{
+	gpu_viewport_texture_pool_clear_users(viewport);
+}

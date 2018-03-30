@@ -217,53 +217,6 @@ RAS_Rasterizer::~RAS_Rasterizer()
 {
 }
 
-void RAS_Rasterizer::InitScreenShaders()
-{
-	static int zero = 0;
-	static int one = 1;
-
-	{
-		DRWShadingGroup *shgrp = DRW_shgroup_create(GPU_shader_get_builtin_shader(GPU_SHADER_DRAW_FRAME_BUFFER), nullptr);
-		DRW_shgroup_uniform_int(shgrp, "colortex", &zero, 1);
-
-		m_screenShaders.normal = shgrp;
-	}
-
-	{
-		DRWShadingGroup *shgrp = DRW_shgroup_create(GPU_shader_get_builtin_shader(GPU_SHADER_STEREO_ANAGLYPH), nullptr);
-		DRW_shgroup_uniform_int(shgrp, "lefteyetex", &zero, 1);
-		DRW_shgroup_uniform_int(shgrp, "righteyetex", &one, 1);
-
-		m_screenShaders.anaglyph = shgrp;
-	}
-
-	{
-		DRWShadingGroup *shgrp = DRW_shgroup_create(GPU_shader_get_builtin_shader(GPU_SHADER_STEREO_STIPPLE), nullptr);
-		DRW_shgroup_uniform_int(shgrp, "lefteyetex", &zero, 1);
-		DRW_shgroup_uniform_int(shgrp, "righteyetex", &one, 1);
-		DRW_shgroup_uniform_int(shgrp, "stippleid", &one, 1);
-
-		m_screenShaders.interlace = shgrp;
-	}
-
-	{
-		DRWShadingGroup *shgrp = DRW_shgroup_create(GPU_shader_get_builtin_shader(GPU_SHADER_STEREO_STIPPLE), nullptr);
-		DRW_shgroup_uniform_int(shgrp, "lefteyetex", &zero, 1);
-		DRW_shgroup_uniform_int(shgrp, "righteyetex", &one, 1);
-		DRW_shgroup_uniform_int(shgrp, "stippleid", &zero, 1);
-
-		m_screenShaders.vinterlace = shgrp;
-	}
-}
-
-void RAS_Rasterizer::ExitScreenShaders()
-{
-	DRW_shgroup_free(m_screenShaders.normal);
-	DRW_shgroup_free(m_screenShaders.anaglyph);
-	DRW_shgroup_free(m_screenShaders.interlace);
-	DRW_shgroup_free(m_screenShaders.vinterlace);
-}
-
 void RAS_Rasterizer::Enable(RAS_Rasterizer::EnableBit bit)
 {
 	m_impl->Enable(bit);
@@ -300,8 +253,6 @@ void RAS_Rasterizer::Init()
 	SetFrontFace(true);
 
 	SetColorMask(true, true, true, true);
-
-	InitScreenShaders();
 }
 
 void RAS_Rasterizer::Exit()
@@ -313,16 +264,12 @@ void RAS_Rasterizer::Exit()
 
 	Clear(RAS_COLOR_BUFFER_BIT | RAS_DEPTH_BUFFER_BIT);
 
-	ExitScreenShaders();
-
 	DRW_viewport_matrix_override_unset(DRW_MAT_VIEW);
 	DRW_viewport_matrix_override_unset(DRW_MAT_VIEWINV);
 	DRW_viewport_matrix_override_unset(DRW_MAT_WIN);
 	DRW_viewport_matrix_override_unset(DRW_MAT_WININV);
 	DRW_viewport_matrix_override_unset(DRW_MAT_PERS);
 	DRW_viewport_matrix_override_unset(DRW_MAT_PERSINV);
-
-	DRW_game_render_loop_end();
 }
 
 void RAS_Rasterizer::BeginFrame(double time)
@@ -472,27 +419,27 @@ void RAS_Rasterizer::DrawStereoFrameBuffer(RAS_ICanvas *canvas, RAS_FrameBuffer 
 	GPU_texture_bind(GPU_framebuffer_color_texture(leftFb->GetFrameBuffer()), 0);
 	GPU_texture_bind(GPU_framebuffer_color_texture(rightFb->GetFrameBuffer()), 1);
 
-	switch (m_stereomode) {
-		case RAS_STEREO_INTERLACED:
-		{
-			DRW_bind_shader_shgroup(m_screenShaders.interlace/*, (DRWState)(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_ALWAYS)*/);
-			break;
-		}
-		case RAS_STEREO_VINTERLACE:
-		{
-			DRW_bind_shader_shgroup(m_screenShaders.interlace/*, (DRWState)(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_ALWAYS)*/);
-			break;
-		}
-		case RAS_STEREO_ANAGLYPH:
-		{
-			DRW_bind_shader_shgroup(m_screenShaders.anaglyph/*, (DRWState)(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_ALWAYS)*/);
-			break;
-		}
-		default:
-		{
-			BLI_assert(false);
-		}
-	}
+	//switch (m_stereomode) {
+	//	case RAS_STEREO_INTERLACED:
+	//	{
+	//		DRW_bind_shader_shgroup(m_screenShaders.interlace/*, (DRWState)(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_ALWAYS)*/);
+	//		break;
+	//	}
+	//	case RAS_STEREO_VINTERLACE:
+	//	{
+	//		DRW_bind_shader_shgroup(m_screenShaders.interlace/*, (DRWState)(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_ALWAYS)*/);
+	//		break;
+	//	}
+	//	case RAS_STEREO_ANAGLYPH:
+	//	{
+	//		DRW_bind_shader_shgroup(m_screenShaders.anaglyph/*, (DRWState)(DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_ALWAYS)*/);
+	//		break;
+	//	}
+	//	default:
+	//	{
+	//		BLI_assert(false);
+	//	}
+	//}
 	
 	DrawOverlayPlane();
 

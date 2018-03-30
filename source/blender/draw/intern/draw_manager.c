@@ -2082,3 +2082,267 @@ void DRW_opengl_context_disable(void)
 }
 
 /** \} */
+
+
+
+
+
+
+
+
+/***********************************Game engine transition*******************************************/
+
+#include "BKE_camera.h"
+#include "BKE_main.h"
+#include "../draw/engines/eevee/eevee_private.h"
+
+EEVEE_Data *EEVEE_engine_data_get(void)
+{
+	EEVEE_Data *data = (EEVEE_Data *)drw_viewport_engine_data_ensure(&draw_engine_eevee_type);
+	return data;
+}
+
+bool DRW_state_is_game_engine()
+{
+	return DST.options.game_engine;
+}
+
+static void drw_game_camera_border(
+	const Scene *scene, const Depsgraph *depsgraph, const ARegion *ar, const View3D *v3d, const RegionView3D *rv3d,
+	rctf *r_viewborder, const bool no_shift, const bool no_zoom)
+{
+	CameraParams params;
+	rctf rect_view, rect_camera;
+
+	/* get viewport viewplane */
+	BKE_camera_params_init(&params);
+	BKE_camera_params_from_view3d(&params, depsgraph, v3d, rv3d);
+	if (no_zoom)
+		params.zoom = 1.0f;
+	BKE_camera_params_compute_viewplane(&params, ar->winx, ar->winy, 1.0f, 1.0f);
+	rect_view = params.viewplane;
+
+	/* get camera viewplane */
+	BKE_camera_params_init(&params);
+	/* fallback for non camera objects */
+	params.clipsta = v3d->near;
+	params.clipend = v3d->far;
+	BKE_camera_params_from_object(&params, v3d->camera);
+	if (no_shift) {
+		params.shiftx = 0.0f;
+		params.shifty = 0.0f;
+	}
+	BKE_camera_params_compute_viewplane(&params, scene->r.xsch, scene->r.ysch, scene->r.xasp, scene->r.yasp);
+	rect_camera = params.viewplane;
+
+	/* get camera border within viewport */
+	r_viewborder->xmin = ((rect_camera.xmin - rect_view.xmin) / BLI_rctf_size_x(&rect_view)) * ar->winx;
+	r_viewborder->xmax = ((rect_camera.xmax - rect_view.xmin) / BLI_rctf_size_x(&rect_view)) * ar->winx;
+	r_viewborder->ymin = ((rect_camera.ymin - rect_view.ymin) / BLI_rctf_size_y(&rect_view)) * ar->winy;
+	r_viewborder->ymax = ((rect_camera.ymax - rect_view.ymin) / BLI_rctf_size_y(&rect_view)) * ar->winy;
+}
+
+// Here I duplicate code in eevee_data.c to avoid to change eevee's sources (static function in eevee_data.c)
+static void drw_game_eevee_view_layer_data_free(void)
+{
+	EEVEE_ViewLayerData *sldata = EEVEE_view_layer_data_ensure();
+
+	/* Lights */
+	MEM_SAFE_FREE(sldata->lamps);
+	DRW_UBO_FREE_SAFE(sldata->light_ubo);
+	DRW_UBO_FREE_SAFE(sldata->shadow_ubo);
+	DRW_UBO_FREE_SAFE(sldata->shadow_render_ubo);
+	GPU_FRAMEBUFFER_FREE_SAFE(sldata->shadow_cube_target_fb);
+	GPU_FRAMEBUFFER_FREE_SAFE(sldata->shadow_cascade_target_fb);
+	GPU_FRAMEBUFFER_FREE_SAFE(sldata->shadow_store_fb);
+	DRW_TEXTURE_FREE_SAFE(sldata->shadow_cube_target);
+	DRW_TEXTURE_FREE_SAFE(sldata->shadow_cube_blur);
+	DRW_TEXTURE_FREE_SAFE(sldata->shadow_cascade_target);
+	DRW_TEXTURE_FREE_SAFE(sldata->shadow_cascade_blur);
+	DRW_TEXTURE_FREE_SAFE(sldata->shadow_pool);
+	MEM_SAFE_FREE(sldata->shcasters_buffers[0].shadow_casters);
+	MEM_SAFE_FREE(sldata->shcasters_buffers[0].flags);
+	MEM_SAFE_FREE(sldata->shcasters_buffers[1].shadow_casters);
+	MEM_SAFE_FREE(sldata->shcasters_buffers[1].flags);
+
+	/* Probes */
+	MEM_SAFE_FREE(sldata->probes);
+	DRW_UBO_FREE_SAFE(sldata->probe_ubo);
+	DRW_UBO_FREE_SAFE(sldata->grid_ubo);
+	DRW_UBO_FREE_SAFE(sldata->planar_ubo);
+	DRW_UBO_FREE_SAFE(sldata->common_ubo);
+	DRW_UBO_FREE_SAFE(sldata->clip_ubo);
+	GPU_FRAMEBUFFER_FREE_SAFE(sldata->probe_filter_fb);
+	for (int i = 0; i < 6; ++i) {
+		GPU_FRAMEBUFFER_FREE_SAFE(sldata->probe_face_fb[i]);
+	}
+	DRW_TEXTURE_FREE_SAFE(sldata->probe_rt);
+	DRW_TEXTURE_FREE_SAFE(sldata->probe_depth_rt);
+	DRW_TEXTURE_FREE_SAFE(sldata->probe_pool);
+	DRW_TEXTURE_FREE_SAFE(sldata->irradiance_pool);
+	DRW_TEXTURE_FREE_SAFE(sldata->irradiance_rt);
+}
+
+static Camera *default_cam;
+static RegionView3D game_rv3d;
+
+GPUTexture *DRW_game_render_loop(Main *bmain, Scene *scene, Object *maincam, EvaluationContext *eval_ctx, int v[4],
+	DRWMatrixState state, bool reset_taa_samples, bool first_run, int viewport_size[2])
+{
+	ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
+	Depsgraph *depsgraph = BKE_scene_get_depsgraph(scene, view_layer, first_run);
+	BKE_scene_graph_update_tagged(eval_ctx, depsgraph, bmain, scene, view_layer);
+
+	DRW_opengl_context_enable();
+
+	memset(&DST, 0x0, offsetof(DRWManager, ogl_context));
+
+	use_drw_engine(&draw_engine_eevee_type);
+
+	if (first_run) {
+		GPUOffScreen *ofs = GPU_offscreen_create(viewport_size[0], viewport_size[1], 0, true, false, NULL);
+		game_rv3d.viewport = GPU_viewport_create_from_offscreen(ofs);
+		GPU_viewport_engine_data_create(game_rv3d.viewport, &draw_engine_eevee_type);
+	}
+
+	DST.viewport = game_rv3d.viewport;
+
+	DST.options.game_engine = true;
+
+	ARegion ar;
+	ar.winx = (int)viewport_size[0];
+	ar.winy = (int)viewport_size[1];
+
+	ar.winrct.xmin = v[0];
+	ar.winrct.ymin = v[1];
+	ar.winrct.xmin = v[2];
+	ar.winrct.ymax = v[3];
+
+	View3D v3d;
+
+	Object *obcam;
+	if (!maincam) {
+		default_cam = BKE_camera_add(bmain, "default_cam");
+		obcam = (Object *)default_cam;
+	}
+	else {
+		obcam = maincam;
+	}
+	Camera *cam = (Camera *)obcam;
+	v3d.camera = obcam;
+	v3d.lens = cam->lens;
+	v3d.near = cam->clipsta;
+	v3d.far = cam->clipend;
+
+	game_rv3d.camdx = 0.0f;
+	game_rv3d.camdy = 0.0f;
+	game_rv3d.camzoom = 0.0f;
+	game_rv3d.persp = RV3D_CAMOB;
+	game_rv3d.is_persp = true;
+	rctf cameraborder;
+	drw_game_camera_border(scene, depsgraph, &ar, &v3d, &game_rv3d, &cameraborder, false, false);
+	game_rv3d.viewcamtexcofac[0] = (float)ar.winx / BLI_rctf_size_x(&cameraborder);
+
+	DRW_viewport_matrix_override_set_all(&state);
+
+	DRW_viewport_matrix_get(game_rv3d.viewmat, DRW_MAT_VIEW);
+	DRW_viewport_matrix_get(game_rv3d.viewinv, DRW_MAT_VIEWINV);
+	DRW_viewport_matrix_get(game_rv3d.winmat, DRW_MAT_WIN);
+	DRW_viewport_matrix_get(game_rv3d.persmat, DRW_MAT_PERS);
+	DRW_viewport_matrix_get(game_rv3d.persinv, DRW_MAT_PERSINV);
+
+	DRW_viewport_matrix_override_unset_all();
+
+	DST.draw_ctx.ar = &ar;
+	DST.draw_ctx.v3d = &v3d;
+	DST.draw_ctx.rv3d = &game_rv3d;
+
+
+	/* We don't use bContext in bge
+	* (not possible or very difficult
+	* with blenderplayer I guess
+	*/
+	DST.draw_ctx.evil_C = NULL;
+
+	DST.draw_ctx.v3d->zbuf = true;
+	DST.draw_ctx.scene = scene;
+	DST.draw_ctx.view_layer = view_layer;
+	DST.draw_ctx.obact = OBACT(view_layer);
+
+	DST.draw_ctx.depsgraph = depsgraph;
+
+
+	drw_context_state_init();
+	drw_viewport_var_init();
+
+
+	IDProperty *props = BKE_view_layer_engine_evaluated_get(view_layer, COLLECTION_MODE_NONE, RE_engine_id_BLENDER_EEVEE);
+	int taa_samples_backup = BKE_collection_engine_property_value_get_int(props, "taa_samples");
+	BKE_collection_engine_property_value_set_int(props, "taa_samples", 0); // We want infinite TAA in bge
+
+
+
+																		   /* Init engines */
+	drw_engines_init();
+	drw_engines_cache_init();
+
+	DEG_OBJECT_ITER_BEGIN(DST.draw_ctx.depsgraph, ob, DRW_iterator_mode_get(),
+		DEG_ITER_OBJECT_FLAG_LINKED_DIRECTLY |
+		DEG_ITER_OBJECT_FLAG_LINKED_VIA_SET |
+		DEG_ITER_OBJECT_FLAG_DUPLI)
+	{
+		drw_engines_cache_populate(ob);
+	}
+	DEG_OBJECT_ITER_END
+
+	drw_engines_cache_finish();
+	DRW_render_instance_buffer_finish();
+
+
+	GPU_framebuffer_bind(DST.default_framebuffer);
+
+	DRW_state_reset();
+	ViewportEngineData *data = drw_viewport_engine_data_ensure(&draw_engine_eevee_type);
+	EEVEE_Data *vedata = (EEVEE_Data *)data;
+	EEVEE_EffectsInfo *effects = vedata->stl->effects;
+	if (reset_taa_samples) {
+		effects->taa_current_sample = 1;
+	}
+	drw_engines_draw_background();
+
+	GPUTexture *finaltex = effects->final_tx;
+	DRW_state_reset();
+
+	GPU_viewport_clear_users_bge(DST.viewport);
+
+	DRW_opengl_context_disable();
+
+	BKE_collection_engine_property_value_set_int(props, "taa_samples", taa_samples_backup); // Retore viewport TAA setting
+
+	return finaltex;
+}
+
+void DRW_game_render_loop_finish()
+{
+	drw_viewport_cache_resize();
+	drw_engines_disable();
+}
+
+/* TODO: Fix memory leaks */
+void DRW_game_render_loop_end()
+{
+	if (default_cam) {
+		BKE_camera_free(default_cam);
+	}
+
+	DRW_opengl_context_enable();
+	drw_viewport_cache_resize();
+	GPU_viewport_free(DST.viewport);
+
+	draw_engine_eevee_type.engine_free();
+	drw_game_eevee_view_layer_data_free();
+
+	DRW_opengl_context_disable();
+}
+/***************************Enf of Game engine transition***************************/
+
