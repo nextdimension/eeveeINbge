@@ -441,7 +441,7 @@ static KX_BlenderMaterial *ConvertMaterial(
 
 /// Convert uv and color layers for a given vertex and material.
 static void uvsRgbFromMesh(Material *ma, MFace *mface, MTFace *tface, const RAS_MeshObject::LayerList& layers,
-	unsigned int rgb[4][RAS_ITexVert::MAX_UNIT], MT_Vector2 uvs[4][RAS_ITexVert::MAX_UNIT])
+	unsigned int rgb[4][RAS_ITexVert::MAX_UNIT], MT_Vector2 uvs[4][RAS_Texture::MaxUnits])
 {
 	if (mface) {
 		GetRGB(mface, layers, rgb);
@@ -565,7 +565,7 @@ RAS_MeshObject* BL_ConvertMesh(Mesh* mesh, Object* blenderobj, KX_Scene* scene, 
 	vertformat.colorSize = max_ii(1, colorLayers);
 
 	Material* ma = 0;
-	MT_Vector2 uvs[4][RAS_ITexVert::MAX_UNIT];
+	MT_Vector2 uvs[4][RAS_Texture::MaxUnits];
 	unsigned int rgb[4][RAS_ITexVert::MAX_UNIT];
 
 	MT_Vector3 pt[4];
