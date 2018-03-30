@@ -104,7 +104,7 @@ void RAS_MaterialBucket::RemoveActiveMeshSlots()
 void RAS_MaterialBucket::AddDisplayArrayBucket(RAS_DisplayArrayBucket *bucket)
 {
 	m_displayArrayBucketList = {};
-	//m_displayArrayBucketList.push_back(bucket);
+	m_displayArrayBucketList.push_back(bucket);
 }
 
 void RAS_MaterialBucket::RemoveDisplayArrayBucket(RAS_DisplayArrayBucket *bucket)
