@@ -47,7 +47,7 @@
  */
 
 /* TODO: Disabled for now, because of eval_ctx. */
-//#define THREADED_DAG_WORKAROUND
+#define THREADED_DAG_WORKAROUND
 
 #include <math.h>
 #include <vector>
@@ -977,6 +977,7 @@ static KX_GameObject *gameobject_from_blenderobject(
 								Object *ob, 
 								KX_Scene *kxscene, 
 								RAS_Rasterizer *rasty,
+	                            Main *bmain,
 								KX_BlenderSceneConverter& converter,
 								bool libloading) 
 {
@@ -1127,8 +1128,10 @@ static KX_GameObject *gameobject_from_blenderobject(
 	case OB_CURVE:
 	{
 		if (ob->curve_cache == nullptr) {
-			BKE_displist_make_curveTypes(blenderscene, ob, false);
+			BKE_displist_make_curveTypes(bmain->eval_ctx, blenderscene, ob, false);
 		}
+		gameobj = new KX_EmptyObject(kxscene, KX_Scene::m_callbacks);
+		break;
 	}
 #endif
 
@@ -1461,7 +1464,8 @@ void BL_ConvertBlenderObjects(struct Main* maggie,
 		KX_GameObject* gameobj = gameobject_from_blenderobject(
 										blenderobject,
 										kxscene, 
-										rendertools, 
+										rendertools,
+			                            maggie,
 										converter,
 										libloading);
 
@@ -1510,7 +1514,8 @@ void BL_ConvertBlenderObjects(struct Main* maggie,
 						KX_GameObject* gameobj = gameobject_from_blenderobject(
 														blenderobject, 
 														kxscene, 
-														rendertools, 
+														rendertools,
+							                            maggie,
 														converter,
 														libloading);
 
