@@ -414,9 +414,9 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromCont
 	KX_KetsjiEngine *engine = KX_GetActiveEngine();
 	Main *bmain = engine->GetConverter()->GetMain();
 	RAS_ICanvas *canvas = engine->GetCanvas();
-	Object *camob = cam ? cam->GetBlenderObject() : (Object *)bmain->camera.first;
-	EvaluationContext *eval_ctx = bmain->eval_ctx; // 
 	Scene *scene = GetBlenderScene();
+	Object *camob = cam ? cam->GetBlenderObject() : BKE_view_layer_camera_find(BKE_view_layer_from_scene_get(scene));
+	EvaluationContext *eval_ctx = bmain->eval_ctx; // 
 
 	const RAS_Rect& viewport = canvas->GetViewportArea();
 	int v[4] = { viewport.GetLeft(), viewport.GetBottom(), viewport.GetWidth(), viewport.GetHeight() };
