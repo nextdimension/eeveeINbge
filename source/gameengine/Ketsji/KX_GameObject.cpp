@@ -859,11 +859,15 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 	NodeGetWorldTransform().getValue(&obmat[0][0]);
 	bool staticObject = compare_m4m4(m_prevObmat, obmat, FLT_MIN);
 
+	Object *blendobj = GetBlenderObject();
+	if (blendobj && ELEM(blendobj->type, OB_MESH, OB_FONT, OB_CURVE)) {
+		EEVEE_lights_cache_shcaster_object_add(EEVEE_view_layer_data_get(), blendobj);
+	}
+
 	if (staticObject) {
 		GetScene()->AppendToStaticObjects(this);
 	}
 	else {
-		Object *blendobj = GetBlenderObject();
 		if (!blendobj)
 			blendobj = m_pBlenderObject;
 		if (blendobj) {
@@ -871,9 +875,6 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 			/* Making sure it's updated. (To move volumes) */
 			invert_m4_m4(blendobj->imat, blendobj->obmat);
 			DEG_id_tag_update(&blendobj->id, NC_OBJECT | ND_TRANSFORM);
-			if (ELEM(blendobj->type, OB_MESH, OB_FONT, OB_CURVE)) {
-				EEVEE_lights_cache_shcaster_object_add(EEVEE_view_layer_data_get(), blendobj);
-			}
 		}
 	}
 	copy_m4_m4(m_prevObmat, obmat);
