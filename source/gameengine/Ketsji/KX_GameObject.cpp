@@ -860,9 +860,6 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 	bool staticObject = compare_m4m4(m_prevObmat, obmat, FLT_MIN);
 
 	Object *blendobj = GetBlenderObject();
-	if (blendobj && ELEM(blendobj->type, OB_MESH, OB_FONT, OB_CURVE)) {
-		EEVEE_lights_cache_shcaster_object_add(EEVEE_view_layer_data_get(), blendobj);
-	}
 
 	if (staticObject) {
 		GetScene()->AppendToStaticObjects(this);
