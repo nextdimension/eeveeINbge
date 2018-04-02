@@ -43,6 +43,7 @@ set(INC
 	../nodes
 	../render/extern/include
 	../../gameengine/Launcher
+	../../../intern/clog
 	../../../intern/ghost
 	../../../intern/guardedalloc
 	../../../intern/glew-mx

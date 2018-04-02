@@ -566,6 +566,8 @@ function(SETUP_BLENDER_SORTED_LIBS)
 
 		bf_windowmanager
 
+		bf_editor_undo
+
 		bf_editor_space_api
 		bf_editor_space_action
 		bf_editor_space_buttons
@@ -696,6 +698,7 @@ function(SETUP_BLENDER_SORTED_LIBS)
 		cycles_kernel
 		cycles_util
 		cycles_subd
+		bf_intern_clog
 	)
 
 	if(NOT WITH_SYSTEM_GLOG)
