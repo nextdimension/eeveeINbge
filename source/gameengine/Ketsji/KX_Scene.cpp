@@ -419,7 +419,7 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromCont
 	EvaluationContext *eval_ctx = bmain->eval_ctx; // 
 
 	const RAS_Rect& viewport = canvas->GetViewportArea();
-	int v[4] = { viewport.GetLeft(), viewport.GetBottom(), viewport.GetWidth(), viewport.GetHeight() };
+	int v[4] = { viewport.GetLeft(), viewport.GetBottom(), viewport.GetWidth() + 1, viewport.GetHeight() + 1 };
 	int viewport_size[2] = { canvas->GetWidth(), canvas->GetHeight() };
 
 	GPUTexture *finaltex = DRW_game_render_loop(bmain, scene, camob, eval_ctx, v, state, reset_taa_samples, first_run, viewport_size);
