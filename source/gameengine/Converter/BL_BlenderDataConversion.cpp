@@ -884,7 +884,7 @@ static void BL_CreatePhysicsObjectNew(KX_GameObject* gameobj,
 
 static KX_LodManager *lodmanager_from_blenderobject(Object *ob, KX_Scene *scene, RAS_Rasterizer *rasty, KX_BlenderSceneConverter& converter, bool libloading)
 {
-	if (BLI_listbase_count_ex(&ob->lodlevels, 2) <= 1) {
+	if (BLI_listbase_count_at_most(&ob->lodlevels, 2) <= 1) {
 		return nullptr;
 	}
 
