@@ -624,17 +624,11 @@ void KX_GameObject::ProcessReplica()
 	Object *ob = GetBlenderObject();
 	if (ob && ELEM(ob->type, OB_MESH, OB_CURVE, OB_FONT)) {
 		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
-		Base *oldbase, *newbase;
 		Scene *scene = GetScene()->GetBlenderScene();
-		ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
-		oldbase = BKE_view_layer_base_find(view_layer, ob);
-
-		/* 2) duplicate base */
-		newbase = ED_object_add_duplicate(bmain, scene, view_layer, oldbase, 0); /* only duplicate linked armature */
-		Object *newob = newbase->object;
+		Object *newob = BKE_object_copy(bmain, m_pBlenderObject);
+		BKE_collection_object_add_from(scene, GetScene()->GetActiveCamera()->GetBlenderObject(), newob); // Add the object to the collection where is the active camera
 		DEG_relations_tag_update(bmain);
 		m_pBlenderObject = newob;
-		
 	}
 
 	m_pGraphicController = nullptr;

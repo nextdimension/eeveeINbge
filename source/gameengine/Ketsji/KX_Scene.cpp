@@ -1089,25 +1089,6 @@ KX_GameObject *KX_Scene::AddReplicaObject(KX_GameObject *originalobject, KX_Game
 		DupliGroupRecurse(gameobj, 0);
 	}
 
-	if (replica->GetBlenderObject()) {
-		float obmat[4][4];
-		replica->NodeGetWorldTransform().getValue(&obmat[0][0]);
-		copy_m4_m4(replica->GetBlenderObject()->obmat, obmat);
-		
-		BKE_collection_object_add_from(GetBlenderScene(), originalobj->GetBlenderObject(), replica->GetBlenderObject());
-		DEG_id_tag_update(&originalobj->GetBlenderObject()->id, OB_RECALC_ALL);
-		DEG_id_tag_update(&originalobj->GetBlenderObject()->id, NC_OBJECT | ND_TRANSFORM);
-	}
-	CListValue<KX_GameObject> *kxchildren = replica->GetChildren();
-	for (KX_GameObject *kxchild : kxchildren) {
-		if (kxchild->GetBlenderObject()) {
-			float obmat[4][4];
-			kxchild->NodeGetWorldTransform().getValue(&obmat[0][0]);
-			copy_m4_m4(kxchild->GetBlenderObject()->obmat, obmat);
-			DEG_id_tag_update(&kxchild->GetBlenderObject()->id, NC_OBJECT | ND_TRANSFORM);
-		}
-	}
-
 	//	don't release replica here because we are returning it, not done with it...
 	return replica;
 }
