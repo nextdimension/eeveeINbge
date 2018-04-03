@@ -134,7 +134,8 @@ KX_GameObject::KX_GameObject(
       m_cullingNode(this),
       m_pInstanceObjects(nullptr),
       m_pDupliGroupObject(nullptr),
-      m_actionManager(nullptr)
+      m_actionManager(nullptr),
+	  m_isReplica(false)
 #ifdef WITH_PYTHON
     , m_attr_dict(nullptr),
     m_collisionCallbacks(nullptr)
@@ -626,9 +627,11 @@ void KX_GameObject::ProcessReplica()
 		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
 		Scene *scene = GetScene()->GetBlenderScene();
 		Object *newob = BKE_object_copy(bmain, m_pBlenderObject);
-		BKE_collection_object_add_from(scene, GetScene()->GetActiveCamera()->GetBlenderObject(), newob); // Add the object to the collection where is the active camera
+		ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
+		BKE_collection_object_add_from(scene, BKE_view_layer_camera_find(view_layer), newob); // Add the object to the collection where is the active camera
 		DEG_relations_tag_update(bmain);
 		m_pBlenderObject = newob;
+		m_isReplica = true;
 	}
 
 	m_pGraphicController = nullptr;
