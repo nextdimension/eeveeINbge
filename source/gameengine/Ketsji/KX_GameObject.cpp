@@ -101,6 +101,8 @@ extern "C" {
 #  include "eevee_private.h"
 #  include "BLI_listbase.h"
 #  include "windowmanager/WM_types.h"
+#  include "editors/include/ED_object.h"
+#  include "depsgraph/DEG_depsgraph_build.h"
 }
 
 #include "KX_BlenderConverter.h"
@@ -622,14 +624,17 @@ void KX_GameObject::ProcessReplica()
 	Object *ob = GetBlenderObject();
 	if (ob && ELEM(ob->type, OB_MESH, OB_CURVE, OB_FONT)) {
 		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
-		Object *newob = BKE_object_copy(bmain, ob);
+		Base *oldbase, *newbase;
+		Scene *scene = GetScene()->GetBlenderScene();
+		ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
+		oldbase = BKE_view_layer_base_find(view_layer, ob);
 
+		/* 2) duplicate base */
+		newbase = ED_object_add_duplicate(bmain, scene, view_layer, oldbase, 0); /* only duplicate linked armature */
+		Object *newob = newbase->object;
+		DEG_relations_tag_update(bmain);
 		m_pBlenderObject = newob;
-		for (int i = 0; i < m_shGroupsBatchesPairs.size(); i++) {
-			DRWShadingGroup *shgroup = m_shGroupsBatchesPairs.at(i).first;
-			Gwn_Batch *batch = m_shGroupsBatchesPairs.at(i).second;
-			DRW_shgroup_call_object_add(shgroup, batch, m_pBlenderObject);
-		}
+		
 	}
 
 	m_pGraphicController = nullptr;

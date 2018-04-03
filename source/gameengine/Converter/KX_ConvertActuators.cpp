@@ -429,14 +429,14 @@ void BL_ConvertActuators(const char* maggiename,
 						KX_GameObject *originalval = nullptr;
 						if (editobact->ob)
 						{
-							if (editobact->ob->lay & activeLayerBitInfo)
+							/*if (editobact->ob->lay & activeLayerBitInfo)
 							{
 								CM_Warning("object \"" << objectname << "\" from AddObject actuator \"" << uniquename
 									<< "\" is not in a hidden layer.");
 							}
-							else {
+							else {*/
 								originalval = converter.FindGameObject(editobact->ob);
-							}
+							//}
 						}
 						
 						KX_SCA_AddObjectActuator* tmpaddact = new KX_SCA_AddObjectActuator(
