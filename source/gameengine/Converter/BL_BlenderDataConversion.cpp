@@ -1323,10 +1323,6 @@ static void bl_ConvertBlenderObject_Single(
 		//we must store this object otherwise it will be deleted
 		//at the end of this function if it is not a root object
 		inactivelist->Add(CM_AddRef(gameobj));
-		// We replace batches with an unique single vertex in the cache
-		// Same vertex for all objects added. this vertex is not displayed on the screen
-		// See DRW_single_vertex_no_diplay_get()
-		gameobj->DiscardMaterialBatches();
 	}
 }
 

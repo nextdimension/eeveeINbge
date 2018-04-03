@@ -180,9 +180,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_suspendeddelta(0.0),
 	m_blenderScene(scene),
 	m_isActivedHysteresis(false),
-	m_lodHysteresisValue(0),
-	m_passesInitialized(false), // eevee
-	m_gameobjShadersInitialized(false) // eevee
+	m_lodHysteresisValue(0)
 {
 
 	m_dbvt_culling = false;
@@ -336,37 +334,6 @@ KX_Scene::~KX_Scene()
 
 /*******************EEVEE INTEGRATION******************/
 
-void KX_Scene::InitScenePasses(EEVEE_PassList *psl)
-{
-	/* MATERIALS PASSES */
-
-	// Default materials passes
-	for (int i = 0; i < VAR_MAT_MAX; ++i) {
-		if (psl->default_pass[i]) {
-			DRWPass *defPass = psl->default_pass[i];
-			m_materialPasses.push_back(defPass);
-		}
-	}
-
-	m_materialPasses.push_back(psl->material_pass);
-	m_materialPasses.push_back(psl->transparent_pass);
-	m_materialPasses.push_back(psl->depth_pass);
-	m_materialPasses.push_back(psl->depth_pass_clip);
-	m_materialPasses.push_back(psl->depth_pass_cull);
-	m_materialPasses.push_back(psl->depth_pass_clip_cull);
-	m_materialPasses.push_back(psl->refract_depth_pass);
-	m_materialPasses.push_back(psl->refract_depth_pass_clip);
-	m_materialPasses.push_back(psl->refract_depth_pass_cull);
-	m_materialPasses.push_back(psl->refract_depth_pass_clip_cull);
-	m_materialPasses.push_back(psl->sss_pass);
-	/* END OF MATERIALS PASSES */
-}
-
-std::vector<DRWPass *>KX_Scene::GetMaterialPasses()
-{
-	return m_materialPasses;
-}
-
 void KX_Scene::AppendProbeList(KX_GameObject *probe)
 {
 	m_lightProbes.push_back(probe);
@@ -434,19 +401,6 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromCont
 	glScissor(v[0], v[1], v[2], v[3]);
 
 	DRW_transform_to_display(finaltex);
-
-	if (m_passesInitialized && !m_gameobjShadersInitialized) {
-		for (KX_GameObject *gameobj : GetObjectList()) {
-			gameobj->GetMaterialShadingGroups();
-		}
-		m_gameobjShadersInitialized = true;
-	}
-
-	if (calledFromContructor) {
-		InitScenePasses(EEVEE_engine_data_get()->psl);
-		m_passesInitialized = true;
-	}
-
 
 	DRW_game_render_loop_finish();
 
@@ -1097,8 +1051,6 @@ KX_GameObject *KX_Scene::AddReplicaObject(KX_GameObject *originalobject, KX_Game
 
 void KX_Scene::RemoveObject(KX_GameObject *gameobj)
 {
-	// Discard geometry (gameobj gaiwan batches)
-	gameobj->DiscardMaterialBatches();
 	// disconnect child from parent
 	SG_Node* node = gameobj->GetSGNode();
 

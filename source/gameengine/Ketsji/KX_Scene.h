@@ -147,12 +147,7 @@ protected:
 	/***************EEVEE INTEGRATION*****************/
 
 	std::vector<KX_GameObject *>m_staticObjects;
-
-	std::vector<DRWPass *>m_materialPasses;
 	std::vector<KX_GameObject *>m_lightProbes;
-
-	bool m_passesInitialized;
-	bool m_gameobjShadersInitialized;
 	/*************************************************/
 
 	RAS_BucketManager*	m_bucketmanager;
@@ -341,9 +336,6 @@ public:
 	~KX_Scene();
 
 	/******************EEVEE INTEGRATION************************/
-	void InitScenePasses(EEVEE_PassList *psl);
-	std::vector<DRWPass *>GetMaterialPasses();
-
 	void AppendToStaticObjects(KX_GameObject *gameobj);
 
 	void AppendProbeList(KX_GameObject *probe);

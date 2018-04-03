@@ -85,15 +85,6 @@ class KX_GameObject : public SCA_IObject
 	Py_Header
 protected:
 
-
-
-
-	std::vector<Gwn_Batch *>m_materialBatches;
-	std::vector<DRWShadingGroup *>m_materialShGroups;
-
-
-	std::vector<std::pair<DRWShadingGroup *, Gwn_Batch *>> m_shGroupsBatchesPairs;
-
 	float m_savedObmat[4][4];
 	float m_prevObmat[4][4];
 
@@ -143,16 +134,6 @@ protected:
 	BL_ActionManager* GetActionManager();
 
 public:
-
-
-	void AddMaterialShadingGroups();
-	std::vector<DRWShadingGroup *>GetMaterialShadingGroups();
-	void AddMaterialBatches();
-	std::vector<Gwn_Batch *>GetMaterialBatches();
-	
-	void DiscardMaterialBatches();
-	void RestoreMaterialBatches(float obmat[4][4]);
-	void AddNewMaterialBatchesToPasses(float obmat[4][4]);
 
 	void TagForUpdate();
 
