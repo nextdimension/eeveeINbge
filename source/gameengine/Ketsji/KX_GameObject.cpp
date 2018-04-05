@@ -526,7 +526,7 @@ void KX_GameObject::ProcessReplica()
 	SCA_IObject::ProcessReplica();
 
 	Object *ob = GetBlenderObject();
-	if (ob && ELEM(ob->type, OB_MESH, OB_CURVE, OB_FONT)) {
+	if (ob) {
 		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
 		Scene *scene = GetScene()->GetBlenderScene();
 		Object *newob = BKE_object_copy(bmain, m_pBlenderObject);
