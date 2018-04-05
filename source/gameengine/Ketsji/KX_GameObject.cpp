@@ -776,14 +776,14 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 		DEG_id_tag_update(&blendobj->id, NC_OBJECT | ND_TRANSFORM);
 	}
 
-	EEVEE_LampsInfo *linfo = EEVEE_view_layer_data_get()->lamps;
-	Object *ob;
-	int i;
-	/* Render each shadow to one layer of the array */
-	for (i = 0; (ob = linfo->shadow_cube_ref[i]) && (i < MAX_SHADOW_CUBE); i++) {
-		EEVEE_LampEngineData *led = EEVEE_lamp_data_ensure(ob);
-		led->need_update = true;
-	}
+	//EEVEE_LampsInfo *linfo = EEVEE_view_layer_data_get()->lamps;
+	//Object *ob;
+	//int i;
+	///* Render each shadow to one layer of the array */
+	//for (i = 0; (ob = linfo->shadow_cube_ref[i]) && (i < MAX_SHADOW_CUBE); i++) {
+	//	EEVEE_LampEngineData *led = EEVEE_lamp_data_ensure(ob);
+	//	led->need_update = true;
+	//}
 
 	copy_m4_m4(m_prevObmat, obmat);
 }
