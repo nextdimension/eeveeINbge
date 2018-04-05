@@ -769,15 +769,11 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 	if (staticObject) {
 		GetScene()->AppendToStaticObjects(this);
 	}
-	else {
-		if (!blendobj)
-			blendobj = m_pBlenderObject;
-		if (blendobj) {
-			copy_m4_m4(blendobj->obmat, obmat);
-			/* Making sure it's updated. (To move volumes) */
-			invert_m4_m4(blendobj->imat, blendobj->obmat);
-			DEG_id_tag_update(&blendobj->id, NC_OBJECT | ND_TRANSFORM);
-		}
+	if (blendobj) {
+		copy_m4_m4(blendobj->obmat, obmat);
+		/* Making sure it's updated. (To move volumes) */
+		invert_m4_m4(blendobj->imat, blendobj->obmat);
+		DEG_id_tag_update(&blendobj->id, NC_OBJECT | ND_TRANSFORM);
 	}
 	copy_m4_m4(m_prevObmat, obmat);
 }
