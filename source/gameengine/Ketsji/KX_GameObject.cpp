@@ -175,6 +175,15 @@ KX_GameObject::~KX_GameObject()
 		copy_m4_m4(GetBlenderObject()->obmat, m_savedObmat);
 	}
 
+	if (m_isReplica) {
+		Scene *scene = GetScene()->GetBlenderScene();
+		m_pBlenderObject->base_flag &= ~BASE_VISIBLED;
+		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
+		BKE_collections_object_remove(bmain, &scene->id, m_pBlenderObject, true);
+		BKE_object_free(m_pBlenderObject);
+		DEG_relations_tag_update(bmain);
+	}
+
 	RemoveMeshes();
 
 	// is this delete somewhere ?
