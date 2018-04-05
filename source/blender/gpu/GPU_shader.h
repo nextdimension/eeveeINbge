@@ -179,8 +179,10 @@ typedef enum GPUBuiltinShader {
 	GPU_SHADER_INSTANCE_VARIYING_COLOR_VARIYING_SIZE, /* Uniformly scaled */
 	GPU_SHADER_INSTANCE_VARIYING_COLOR_VARIYING_SCALE,
 	GPU_SHADER_INSTANCE_EDGES_VARIYING_COLOR,
-	/* specialized for widget drawing */
+	/* specialized for UI drawing */
 	GPU_SHADER_2D_WIDGET_BASE,
+	GPU_SHADER_2D_NODELINK,
+	GPU_SHADER_2D_NODELINK_INST,
 
 	/**********Game engine***********/
 	GPU_SHADER_DRAW_FRAME_BUFFER,
