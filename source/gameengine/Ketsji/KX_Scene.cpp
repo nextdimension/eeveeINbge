@@ -66,7 +66,6 @@
 #include "RAS_2DFilterData.h"
 #include "RAS_2DFilter.h"
 #include "KX_2DFilterManager.h"
-#include "RAS_BoundingBoxManager.h"
 #include "RAS_BucketManager.h"
 #include "RAS_ILightObject.h"
 
@@ -219,7 +218,6 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 
 	KX_TextMaterial *textMaterial = new KX_TextMaterial();
 	m_bucketmanager=new RAS_BucketManager(textMaterial);
-	m_boundingBoxManager = new RAS_BoundingBoxManager();
 	
 	bool showObstacleSimulation = (scene->gm.flag & GAME_SHOW_OBSTACLE_SIMULATION) != 0;
 	switch (scene->gm.obstacleSimulation)
@@ -309,10 +307,6 @@ KX_Scene::~KX_Scene()
 	if (m_bucketmanager)
 	{
 		delete m_bucketmanager;
-	}
-
-	if (m_boundingBoxManager) {
-		delete m_boundingBoxManager;
 	}
 
 	DRW_game_render_loop_end();
@@ -429,11 +423,6 @@ void KX_Scene::SetName(const std::string& name)
 RAS_BucketManager* KX_Scene::GetBucketManager() const
 {
 	return m_bucketmanager;
-}
-
-RAS_BoundingBoxManager *KX_Scene::GetBoundingBoxManager() const
-{
-	return m_boundingBoxManager;
 }
 
 CListValue<KX_GameObject> *KX_Scene::GetObjectList() const
@@ -632,7 +621,7 @@ KX_GameObject* KX_Scene::AddNodeReplicaObject(SG_Node* node, KX_GameObject *game
 			break;
 		}
 	}
-	newobj->AddMeshUser();
+	newobj->AddMeshReadOnlyDisplayArray();
 
 	// logic cannot be replicated, until the whole hierarchy is replicated.
 	m_logicHierarchicalGameObjects.push_back(newobj);
@@ -680,9 +669,6 @@ KX_GameObject* KX_Scene::AddNodeReplicaObject(SG_Node* node, KX_GameObject *game
 		if (parent)
 			newctrl->SuspendDynamics();
 	}
-
-	// Always make sure that the bounding box is valid.
-	newobj->UpdateBounds(true);
 
 	return newobj;
 }
@@ -1337,15 +1323,13 @@ void KX_Scene::ReplaceMesh(KX_GameObject *gameobj, RAS_MeshObject *mesh, bool us
 		}
 	}
 
-	gameobj->AddMeshUser();
+	gameobj->AddMeshReadOnlyDisplayArray();
 	}
 
 	if (use_phys) { /* update the new assigned mesh with the physics mesh */
 		if (gameobj->GetPhysicsController())
 			gameobj->GetPhysicsController()->ReinstancePhysicsShape(nullptr, use_gfx?nullptr:mesh);
 	}
-	// Always make sure that the bounding box is updated to the new mesh.
-	gameobj->UpdateBounds(true);
 }
 
 
@@ -1393,75 +1377,6 @@ void KX_Scene::PhysicsCullingCallback(KX_ClientObjectInfo *objectInfo, void *cul
 	// make object visible
 	gameobj->SetCulled(false);
 	info->m_nodes.push_back(gameobj->GetCullingNode());
-}
-
-void KX_Scene::CalculateVisibleMeshes(KX_CullingNodeList& nodes, KX_Camera *cam, int layer)
-{
-	if (!cam->GetFrustumCulling()) {
-		for (KX_GameObject *gameobj : m_objectlist) {
-			KX_CullingNode *node = gameobj->GetCullingNode();
-			nodes.push_back(gameobj->GetCullingNode());
-			node->SetCulled(false);
-		}
-		return;
-	}
-
-	CalculateVisibleMeshes(nodes, cam->GetFrustum(), layer);
-}
-
-void KX_Scene::CalculateVisibleMeshes(KX_CullingNodeList& nodes, const SG_Frustum& frustum, int layer)
-{
-	m_boundingBoxManager->Update(false);
-
-	bool dbvt_culling = false;
-	if (m_dbvt_culling) {
-		for (KX_GameObject *gameobj : m_objectlist) {
-			gameobj->SetCulled(true);
-			/* Reset KX_GameObject m_culled to true before doing culling
-			 * since DBVT culling will only set it to false.
-			 */
-			if (gameobj->GetDeformer()) {
-				/** Update all the deformer, not only per material.
-				 * One of the side effect is to clear some flags about AABB calculation.
-				 * like in KX_SoftBodyDeformer.
-				 */
-				gameobj->GetDeformer()->UpdateBuckets();
-			}
-			// Update the object bounding volume box.
-			gameobj->UpdateBounds(false);
-		}
-
-		// test culling through Bullet
-		// get the clip planes
-		const std::array<MT_Vector4, 6>& planes = frustum.GetPlanes();
-		const MT_Matrix4x4& matrix = frustum.GetMatrix();
-		int viewport[4];
-		KX_GetActiveEngine()->GetCanvas()->GetViewportArea().Pack(viewport);
-
-		CullingInfo info(layer, nodes);
-
-		dbvt_culling = m_physicsEnvironment->CullingTest(PhysicsCullingCallback, &info, planes, m_dbvt_occlusion_res, viewport, matrix);
-	}
-	if (!dbvt_culling) {
-		KX_CullingHandler handler(nodes, frustum);
-		for (KX_GameObject *gameobj : m_objectlist) {
-			if (gameobj->UseCulling() && gameobj->GetVisible() && (layer == 0 || gameobj->GetLayer() & layer)) {
-				if (gameobj->GetDeformer()) {
-					/** Update all the deformer, not only per material.
-					 * One of the side effect is to clear some flags about AABB calculation.
-					 * like in KX_SoftBodyDeformer.
-					 */
-					gameobj->GetDeformer()->UpdateBuckets();
-				}
-				// Update the object bounding volume box.
-				gameobj->UpdateBounds(false);
-
-				handler.Process(gameobj->GetCullingNode());
-			}
-		}
-	}
-
-	m_boundingBoxManager->ClearModified();
 }
 
 void KX_Scene::DrawDebug(RAS_DebugDraw& debugDraw, const KX_CullingNodeList& nodes)
@@ -1948,7 +1863,6 @@ bool KX_Scene::MergeScene(KX_Scene *other)
 	}
 
 	GetBucketManager()->MergeBucketManager(other->GetBucketManager());
-	GetBoundingBoxManager()->Merge(other->GetBoundingBoxManager());
 
 	/* active + inactive == all ??? - lets hope so */
 	for (KX_GameObject *gameobj : *other->GetObjectList()) {

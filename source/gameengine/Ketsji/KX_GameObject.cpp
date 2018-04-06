@@ -41,8 +41,6 @@
 #include "KX_Light.h"  // only for their ::Type
 #include "KX_FontObject.h"  // only for their ::Type
 #include "RAS_MeshObject.h"
-#include "RAS_MeshUser.h"
-#include "RAS_BoundingBoxManager.h"
 #include "RAS_Deformer.h"
 #include "RAS_IDisplayArray.h"
 #include "RAS_Polygon.h"
@@ -66,7 +64,6 @@
 #include "KX_Scene.h"
 #include "KX_LodLevel.h"
 #include "KX_LodManager.h"
-#include "KX_BoundingBox.h"
 #include "KX_CullingNode.h"
 #include "KX_CollisionContactPoints.h"
 
@@ -121,7 +118,6 @@ KX_GameObject::KX_GameObject(
       m_layer(0),
       m_lodManager(nullptr),
       m_currentLodLevel(0),
-      m_meshUser(nullptr),
       m_pBlenderObject(nullptr),
       m_pBlenderGroupObject(nullptr),
       m_bIsNegativeScaling(false),
@@ -552,7 +548,6 @@ void KX_GameObject::ProcessReplica()
 	m_actionManager = nullptr;
 	m_state = 0;
 
-	m_meshUser = nullptr;
 	if (m_lodManager) {
 		m_lodManager->AddRef();
 	}
@@ -733,27 +728,11 @@ void KX_GameObject::UpdateBlenderObjectMatrix(Object* blendobj)
 	}
 }
 
-void KX_GameObject::AddMeshUser()
+void KX_GameObject::AddMeshReadOnlyDisplayArray()
 {
 	for (size_t i = 0; i < m_meshes.size(); ++i) {
-		m_meshUser = m_meshes[i]->AddMeshUser(m_pClient_info, GetDeformer());
+		m_meshes[i]->AddDisplayArray(m_pClient_info, GetDeformer());
 	}
-
-	if (m_meshUser) {
-		NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
-	}
-}
-
-void KX_GameObject::UpdateBuckets()
-{
-	// Update datas and add mesh slot to be rendered only if the object is not culled.
-	if (m_pSGNode->IsDirty(SG_Node::DIRTY_RENDER)) {
-		NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
-		m_pSGNode->ClearDirty(SG_Node::DIRTY_RENDER);
-	}
-
-	m_meshUser->SetColor(m_objectColor);
-	m_meshUser->SetFrontFace(!m_bIsNegativeScaling);
 }
 
 /************************EEVEE_INTEGRATION**********************/
@@ -791,25 +770,13 @@ void KX_GameObject::TagForUpdate() // Used for shadow culling
 
 void KX_GameObject::RemoveMeshes()
 {
-	// Remove all mesh slots.
-	if (m_meshUser) {
-		delete m_meshUser;
-		m_meshUser = nullptr;
-	}
-
-	//note: meshes can be shared, and are deleted by KX_BlenderSceneConverter
-
 	m_meshes.clear();
-}
-
-RAS_MeshUser *KX_GameObject::GetMeshUser() const
-{
-	return m_meshUser;
 }
 
 bool KX_GameObject::UseCulling() const
 {
-	return (m_meshUser != nullptr);
+	Object *ob = m_pBlenderObject;
+	return ob && ELEM(ob->type, OB_FONT, OB_MESH, OB_CURVE, OB_SURF);
 }
 
 void KX_GameObject::SetLodManager(KX_LodManager *lodManager)
@@ -1410,43 +1377,6 @@ MT_Transform KX_GameObject::NodeGetLocalTransform() const
 	return m_pSGNode->GetLocalTransform();
 }
 
-void KX_GameObject::UpdateBounds(bool force)
-{
-	if ((!m_autoUpdateBounds && !force) || !m_meshUser) {
-		return;
-	}
-
-	RAS_BoundingBox *boundingBox = m_meshUser->GetBoundingBox();
-	if (!boundingBox || (!boundingBox->GetModified() && !force)) {
-		return;
-	}
-
-	// AABB Box : min/max.
-	MT_Vector3 aabbMin;
-	MT_Vector3 aabbMax;
-
-	boundingBox->GetAabb(aabbMin, aabbMax);
-
-	SetBoundsAabb(aabbMin, aabbMax);
-}
-
-void KX_GameObject::SetBoundsAabb(MT_Vector3 aabbMin, MT_Vector3 aabbMax)
-{
-	// Set the AABB in culling node box.
-	m_cullingNode.GetAabb().Set(aabbMin, aabbMax);
-
-	// Synchronize the AABB with the graphic controller.
-	if (m_pGraphicController) {
-		m_pGraphicController->SetLocalAabb(aabbMin, aabbMax);
-	}
-}
-
-void KX_GameObject::GetBoundsAabb(MT_Vector3 &aabbMin, MT_Vector3 &aabbMax) const
-{
-	// Get the culling node box AABB
-	m_cullingNode.GetAabb().Get(aabbMin, aabbMax);
-}
-
 KX_CullingNode *KX_GameObject::GetCullingNode()
 {
 	return &m_cullingNode;
@@ -1916,7 +1846,6 @@ PyAttributeDef KX_GameObject::Attributes[] = {
 	KX_PYATTRIBUTE_RW_FUNCTION("layer", KX_GameObject, pyattr_get_layer, pyattr_set_layer),
 	KX_PYATTRIBUTE_RW_FUNCTION("visible",	KX_GameObject, pyattr_get_visible,	pyattr_set_visible),
 	KX_PYATTRIBUTE_RO_FUNCTION("culled", KX_GameObject, pyattr_get_culled),
-	KX_PYATTRIBUTE_RO_FUNCTION("cullingBox",	KX_GameObject, pyattr_get_cullingBox),
 	KX_PYATTRIBUTE_BOOL_RW    ("occlusion", KX_GameObject, m_bOccluder),
 	KX_PYATTRIBUTE_RW_FUNCTION("position",	KX_GameObject, pyattr_get_worldPosition,	pyattr_set_localPosition),
 	KX_PYATTRIBUTE_RO_FUNCTION("localInertia",	KX_GameObject, pyattr_get_localInertia),
@@ -2582,12 +2511,6 @@ PyObject *KX_GameObject::pyattr_get_culled(PyObjectPlus *self_v, const KX_PYATTR
 {
 	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
 	return PyBool_FromLong(self->GetCulled());
-}
-
-PyObject *KX_GameObject::pyattr_get_cullingBox(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)
-{
-	KX_GameObject *self = static_cast<KX_GameObject *>(self_v);
-	return (new KX_BoundingBox(self))->NewProxy(true);
 }
 
 PyObject *KX_GameObject::pyattr_get_worldPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef)

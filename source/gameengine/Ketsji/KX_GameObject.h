@@ -57,7 +57,6 @@ class KX_RayCast;
 class KX_LodManager;
 class KX_CullingNode;
 class RAS_MeshObject;
-class RAS_MeshUser;
 class PHY_IGraphicController;
 class PHY_IPhysicsEnvironment;
 class PHY_IPhysicsController;
@@ -90,8 +89,6 @@ protected:
 
 	bool m_isReplica;
 
-
-
 	KX_ClientObjectInfo*				m_pClient_info;
 	std::string							m_name;
 	std::string							m_text;
@@ -99,7 +96,6 @@ protected:
 	std::vector<RAS_MeshObject*>		m_meshes;
 	KX_LodManager						*m_lodManager;
 	short								m_currentLodLevel;
-	RAS_MeshUser						*m_meshUser;
 	struct Object*						m_pBlenderObject;
 	struct Object*						m_pBlenderGroupObject;
 	
@@ -704,15 +700,8 @@ public:
 	 * user of this object's meshes.
 	 */
 	virtual void
-	AddMeshUser(
+	AddMeshReadOnlyDisplayArray(
 	);
-	
-	/**
-	 * Update buckets with data about the mesh after
-	 * creating or duplicating the object, changing
-	 * visibility, object color, .. .
-	 */
-	virtual void UpdateBuckets();
 
 	/**
 	 * Clear the meshes associated with this class
@@ -768,9 +757,6 @@ public:
 	) const { 
 		return m_meshes.size(); 
 	}
-
-	/// Return the mesh user of this game object.
-	RAS_MeshUser *GetMeshUser() const;
 
 	/// Return true when the object can be culled.
 	bool UseCulling() const;
@@ -842,28 +828,6 @@ public:
 	GetLayer(
 		void
 	);
-
-	/// Allow auto updating bounding volume box.
-	inline void SetAutoUpdateBounds(bool autoUpdate)
-	{
-		m_autoUpdateBounds = autoUpdate;
-	}
-
-	inline bool GetAutoUpdateBounds() const
-	{
-		return m_autoUpdateBounds;
-	}
-
-	/** Update the game object bounding box (AABB) by using the one existing in the
-	 * mesh or the mesh deformer.
-	 * \param force Force the AABB update even if the object doesn't allow auto update or if the mesh is
-	 * not modified like in the case of mesh replacement or object duplication.
-	 * \warning Should be called when the game object contains a valid scene graph node
-	 * and a valid graphic controller (if it exists).
-	 */
-	void UpdateBounds(bool force);
-	void SetBoundsAabb(MT_Vector3 aabbMin, MT_Vector3 aabbMax);
-	void GetBoundsAabb(MT_Vector3 &aabbMin, MT_Vector3 &aabbMax) const;
 
 	KX_CullingNode *GetCullingNode();
 
@@ -998,7 +962,6 @@ public:
 	static PyObject*	pyattr_get_visible(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int			pyattr_set_visible(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject*	pyattr_get_culled(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
-	static PyObject*	pyattr_get_cullingBox(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static PyObject*	pyattr_get_worldPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int			pyattr_set_worldPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 	static PyObject*	pyattr_get_localPosition(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);

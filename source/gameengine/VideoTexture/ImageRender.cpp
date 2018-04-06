@@ -312,9 +312,6 @@ bool ImageRender::Render()
 		glDisable(GL_POLYGON_STIPPLE);
 	}
 
-	KX_CullingNodeList nodes;
-	m_scene->CalculateVisibleMeshes(nodes, m_camera, 0);
-
 	m_engine->UpdateAnimations(m_scene);
 
 	m_scene->RenderAfterCameraSetup(m_rasterizer, false);

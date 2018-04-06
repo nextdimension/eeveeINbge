@@ -33,9 +33,7 @@
 #include "BL_DeformableGameObject.h"
 #include "BL_ShapeDeformer.h"
 #include "RAS_MeshObject.h"
-#include "RAS_MeshUser.h"
 #include "RAS_MaterialBucket.h"
-#include "RAS_BoundingBoxManager.h"
 
 
 BL_DeformableGameObject::~BL_DeformableGameObject()

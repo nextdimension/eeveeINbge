@@ -78,7 +78,6 @@ class KX_FontObject;
 class KX_GameObject;
 class KX_LightObject;
 class RAS_MeshObject;
-class RAS_BoundingBoxManager;
 class RAS_BucketManager;
 class RAS_MaterialBucket;
 class RAS_IPolyMaterial;
@@ -151,9 +150,6 @@ protected:
 	/*************************************************/
 
 	RAS_BucketManager*	m_bucketmanager;
-
-	/// Manager used to update all the mesh bounding box.
-	RAS_BoundingBoxManager *m_boundingBoxManager;
 
 	std::vector<KX_GameObject *> m_tempObjectList;
 
@@ -346,7 +342,6 @@ public:
 	/***************End of EEVEE INTEGRATION**********************/
 
 	RAS_BucketManager* GetBucketManager() const;
-	RAS_BoundingBoxManager *GetBoundingBoxManager() const;
 	RAS_MaterialBucket*	FindBucket(RAS_IPolyMaterial* polymat, bool &bucketCreated);
 
 	/**
@@ -488,8 +483,6 @@ public:
 
 	void SetWorldInfo(class KX_WorldInfo* wi);
 	KX_WorldInfo* GetWorldInfo();
-	void CalculateVisibleMeshes(KX_CullingNodeList& nodes, KX_Camera *cam, int layer);
-	void CalculateVisibleMeshes(KX_CullingNodeList& nodes, const SG_Frustum& frustum, int layer);
 
 	/// \section Debug draw.
 	void DrawDebug(RAS_DebugDraw& debugDraw, const KX_CullingNodeList& nodes);

@@ -47,12 +47,9 @@
 #include "MT_Vector2.h"
 #include <string>
 
-class RAS_MeshUser;
 class RAS_Deformer;
 class RAS_Polygon;
 class RAS_ITexVert;
-class RAS_BoundingBox;
-class RAS_BoundingBoxManager;
 struct Mesh;
 struct MTFace;
 struct MCol;
@@ -98,9 +95,6 @@ private:
 	struct polygonSlot;
 	struct backtofront;
 	struct fronttoback;
-
-	/// The mesh bounding box.
-	RAS_BoundingBox *m_boundingBox;
 
 protected:
 	RAS_MeshMaterialList m_materials;
@@ -151,11 +145,10 @@ public:
 	int NumPolygons();
 	RAS_Polygon *GetPolygon(int num) const;
 
-	RAS_BoundingBox *GetBoundingBox() const;
 	// buckets
-	RAS_MeshUser *AddMeshUser(void *clientobj, RAS_Deformer *deformer);
+	void AddDisplayArray(void *clientobj, RAS_Deformer *deformer);
 
-	void EndConversion(RAS_BoundingBoxManager *boundingBoxManager);
+	void EndConversion();
 
 	/// Return the list of blender's layers.
 	const LayersInfo& GetLayersInfo() const;

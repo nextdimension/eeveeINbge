@@ -39,7 +39,6 @@
 #include "KX_SoftBodyDeformer.h"
 #include "RAS_MeshObject.h"
 #include "RAS_DisplayArray.h"
-#include "RAS_BoundingBoxManager.h"
 
 #ifdef WITH_BULLET
 
@@ -55,10 +54,6 @@ KX_SoftBodyDeformer::KX_SoftBodyDeformer(RAS_MeshObject *pMeshObject, BL_Deforma
 	m_needUpdateAabb(true)
 {
 	KX_Scene *scene = m_gameobj->GetScene();
-	RAS_BoundingBoxManager *boundingBoxManager = scene->GetBoundingBoxManager();
-	m_boundingBox = boundingBoxManager->CreateBoundingBox();
-	// Set AABB default to mesh bounding box AABB.
-	m_boundingBox->CopyAabb(m_mesh->GetBoundingBox());
 }
 
 KX_SoftBodyDeformer::~KX_SoftBodyDeformer()
@@ -96,11 +91,6 @@ bool KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 
 	btSoftBody::tNodeArray&   nodes(softBody->m_nodes);
 
-	if (m_needUpdateAabb) {
-		m_boundingBox->SetAabb(MT_Vector3(0.0f, 0.0f, 0.0f), MT_Vector3(0.0f, 0.0f, 0.0f));
-		m_needUpdateAabb = false;
-	}
-
 	// AABB Box : min/max.
 	MT_Vector3 aabbMin;
 	MT_Vector3 aabbMax;
@@ -127,10 +117,6 @@ bool KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 		    nodes[softbodyindex].m_n.getZ());
 		v->SetNormal(normal);
 
-		if (!m_gameobj->GetAutoUpdateBounds()) {
-			continue;
-		}
-
 		const MT_Vector3& scale = m_gameobj->NodeGetWorldScaling();
 		const MT_Vector3& invertscale = MT_Vector3(1.0f / scale.x(), 1.0f / scale.y(), 1.0f / scale.z());
 		const MT_Vector3& pos = m_gameobj->NodeGetWorldPosition();
@@ -156,8 +142,6 @@ bool KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 					 (RAS_IDisplayArray::TANGENT_MODIFIED |
 					  RAS_IDisplayArray::UVS_MODIFIED |
 					  RAS_IDisplayArray::COLORS_MODIFIED));
-
-	m_boundingBox->ExtendAabb(aabbMin, aabbMax);
 
 	array->SetModifiedFlag(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
 

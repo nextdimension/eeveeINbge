@@ -909,9 +909,6 @@ void KX_KetsjiEngine::RenderCamera(KX_Scene *scene, const CameraRenderData& came
 
 	m_logger.StartLog(tc_scenegraph, m_kxsystem->GetTimeInSeconds());
 
-	/*KX_CullingNodeList nodes;
-	scene->CalculateVisibleMeshes(nodes, cullingcam, 0);*/
-
 	m_logger.StartLog(tc_animations, m_kxsystem->GetTimeInSeconds());
 	UpdateAnimations(scene);
 

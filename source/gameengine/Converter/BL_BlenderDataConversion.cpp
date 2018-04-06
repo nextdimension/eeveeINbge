@@ -87,7 +87,6 @@
 #include "RAS_Polygon.h"
 #include "RAS_TexVert.h"
 #include "RAS_BucketManager.h"
-#include "RAS_BoundingBoxManager.h"
 #include "RAS_IPolygonMaterial.h"
 #include "KX_BlenderMaterial.h"
 #include "BL_Texture.h"
@@ -714,7 +713,7 @@ RAS_MeshObject* BL_ConvertMesh(Mesh* mesh, Object* blenderobj, KX_Scene* scene, 
 	// keep meshobj->m_sharedvertex_map for reinstance phys mesh.
 	// 2.49a and before it did: meshobj->m_sharedvertex_map.clear();
 	// but this didnt save much ram. - Campbell
-	meshobj->EndConversion(scene->GetBoundingBoxManager());
+	meshobj->EndConversion();
 
 	// pre calculate texture generation
 	// However, we want to delay this if we're libloading so we can make sure we have the right scene.
@@ -1117,7 +1116,7 @@ static KX_GameObject *gameobject_from_blenderobject(
 	{
 		bool do_color_management = BKE_scene_check_color_management_enabled(blenderscene);
 		/* font objects have no bounding box */
-		KX_FontObject *fontobj = new KX_FontObject(kxscene, KX_Scene::m_callbacks, rasty, kxscene->GetBoundingBoxManager(), ob, do_color_management);
+		KX_FontObject *fontobj = new KX_FontObject(kxscene, KX_Scene::m_callbacks, rasty, ob, do_color_management);
 		gameobj = fontobj;
 
 		kxscene->GetFontList()->Add(CM_AddRef(fontobj));
@@ -1316,7 +1315,6 @@ static void bl_ConvertBlenderObject_Single(
 		//tf.Add(gameobj->GetSGNode());
 
 		gameobj->NodeUpdateGS(0);
-		gameobj->AddMeshUser();
 	}
 	else
 	{
@@ -1740,11 +1738,6 @@ void BL_ConvertBlenderObjects(struct Main* maggie,
 	// Create and set bounding volume.
 	for (KX_GameObject *gameobj : sumolist) {
 		Object *blenderobject = gameobj->GetBlenderObject();
-
-		// The object allow AABB auto update only if there's no predefined bound.
-		gameobj->SetAutoUpdateBounds(true);
-
-		gameobj->UpdateBounds(true);
 	}
 
 	// create physics joints

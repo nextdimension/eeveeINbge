@@ -34,8 +34,6 @@
 
 #include "KX_GameObject.h"
 
-class RAS_BoundingBox;
-
 class KX_FontObject : public KX_GameObject
 {
 public:
@@ -43,14 +41,12 @@ public:
 	KX_FontObject(void *sgReplicationInfo,
 	              SG_Callbacks callbacks,
 	              RAS_Rasterizer *rasterizer,
-				  RAS_BoundingBoxManager *boundingBoxManager,
 	              Object *ob,
 	              bool do_color_management);
 
 	virtual ~KX_FontObject();
 
-	virtual void AddMeshUser();
-	virtual void UpdateBuckets();
+	virtual void AddMeshReadOnlyDisplayArray();
 
 	/**
 	 * Inherited from CValue -- return a new copy of this
@@ -82,8 +78,6 @@ protected:
 	float m_line_spacing;
 	MT_Vector3 m_offset;
 
-	/// Text bounding box for mesh/text user.
-	RAS_BoundingBox *m_boundingBox;
 	/// needed for drawing routine
 	class RAS_Rasterizer *m_rasterizer;
 

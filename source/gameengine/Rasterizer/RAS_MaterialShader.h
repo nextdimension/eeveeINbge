@@ -3,7 +3,6 @@
 
 #include "RAS_MeshObject.h" // For RAS_MeshObject::LayersInfo.
 
-class RAS_MeshUser;
 class RAS_Rasterizer;
 
 class RAS_MaterialShader
@@ -19,7 +18,7 @@ public:
 	/// Unbind the shader.
 	virtual void Desactivate() = 0;
 	/// Update the shader with mesh user data as model matrix.
-	virtual void Update(RAS_Rasterizer *rasty, RAS_MeshUser *meshUser) = 0;
+	virtual void Update(RAS_Rasterizer *rasty, class KX_GameObject *gameobj) = 0;
 };
 
 #endif  // __RAS_MATERIAL_SHADER_H__

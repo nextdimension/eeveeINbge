@@ -62,8 +62,6 @@ set(SRC
 	RAS_2DFilterData.cpp
 	RAS_2DFilterManager.cpp
 	RAS_2DFilterFrameBuffer.cpp
-	RAS_BoundingBox.cpp
-	RAS_BoundingBoxManager.cpp
 	RAS_BucketManager.cpp
 	RAS_DebugDraw.cpp
 	RAS_Deformer.cpp
@@ -78,7 +76,6 @@ set(SRC
 	RAS_MaterialBucket.cpp
 	RAS_MeshMaterial.cpp
 	RAS_MeshObject.cpp
-	RAS_MeshUser.cpp
 	RAS_Polygon.cpp
 	RAS_Shader.cpp
 	RAS_Texture.cpp
@@ -87,8 +84,6 @@ set(SRC
 	RAS_2DFilter.h
 	RAS_2DFilterManager.h
 	RAS_2DFilterFrameBuffer.h
-	RAS_BoundingBox.h
-	RAS_BoundingBoxManager.h
 	RAS_BucketManager.h
 	RAS_CameraData.h
 	RAS_DebugDraw.h
@@ -107,7 +102,6 @@ set(SRC
 	RAS_MaterialShader.h
 	RAS_MeshMaterial.h
 	RAS_MeshObject.h
-	RAS_MeshUser.h
 	RAS_Polygon.h
 	RAS_Rect.h
 	RAS_Shader.h

@@ -41,7 +41,6 @@
 #include "RAS_Rasterizer.h"
 #include "RAS_BucketManager.h"
 #include "RAS_MaterialBucket.h"
-#include "RAS_BoundingBox.h"
 
 /* paths needed for font load */
 #include "BLI_blenlib.h"
@@ -83,7 +82,6 @@ static std::vector<std::string> split_string(std::string str)
 KX_FontObject::KX_FontObject(void *sgReplicationInfo,
                              SG_Callbacks callbacks,
                              RAS_Rasterizer *rasterizer,
-							 RAS_BoundingBoxManager *boundingBoxManager,
                              Object *ob,
                              bool do_color_management)
 	:KX_GameObject(sgReplicationInfo, callbacks),
@@ -99,8 +97,6 @@ KX_FontObject::KX_FontObject(void *sgReplicationInfo,
 	m_offset = MT_Vector3(text->xof, text->yof, 0.0f);
 
 	m_fontid = GetFontId(text->vfont);
-
-	m_boundingBox = new RAS_BoundingBox(boundingBoxManager);
 
 	SetText(text->str);
 }
@@ -121,55 +117,18 @@ CValue *KX_FontObject::GetReplica()
 void KX_FontObject::ProcessReplica()
 {
 	KX_GameObject::ProcessReplica();
-
-	m_boundingBox = m_boundingBox->GetReplica();
 }
 
-void KX_FontObject::AddMeshUser()
+void KX_FontObject::AddMeshReadOnlyDisplayArray()
 {
 	RAS_BucketManager *bucketManager = GetScene()->GetBucketManager();
 	RAS_DisplayArrayBucket *arrayBucket = bucketManager->GetTextDisplayArrayBucket();
-}
-
-void KX_FontObject::UpdateBuckets()
-{
-	// Update datas and add mesh slot to be rendered only if the object is not culled.
-	if (m_pSGNode->IsDirty(SG_Node::DIRTY_RENDER)) {
-		//NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
-		m_pSGNode->ClearDirty(SG_Node::DIRTY_RENDER);
-	}
-
-	// Font Objects don't use the glsl shader, this color management code is copied from gpu_shader_material.glsl
-	float color[4];
-	if (m_do_color_management) {
-		linearrgb_to_srgb_v4(color, m_objectColor.getValue());
-	}
-	else {
-		m_objectColor.getValue(color);
-	}
-
-	// HARDCODED MULTIPLICATION FACTOR - this will affect the render resolution directly
-	const float RES = BGE_FONT_RES * m_resolution;
-
-	const float size = fabs(m_fsize * NodeGetWorldScaling()[0] * RES);
-	const float aspect = m_fsize / size;
-
-	// Account for offset
-	MT_Vector3 offset = NodeGetWorldOrientation() * m_offset * NodeGetWorldScaling();
-	// Orient the spacing vector
-	MT_Vector3 spacing = NodeGetWorldOrientation() * MT_Vector3(0.0f, m_fsize * m_line_spacing, 0.0f) * NodeGetWorldScaling()[1];
-
 }
 
 void KX_FontObject::SetText(const std::string& text)
 {
 	m_text = text;
 	m_texts = split_string(text);
-
-	MT_Vector2 min;
-	MT_Vector2 max;
-	GetTextAabb(min, max);
-	m_boundingBox->SetAabb(MT_Vector3(min.x(), min.y(), 0.0f), MT_Vector3(max.x(), max.y(), 0.0f));
 }
 
 void KX_FontObject::UpdateTextFromProperty()
