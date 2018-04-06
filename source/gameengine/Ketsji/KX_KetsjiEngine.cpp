@@ -85,6 +85,7 @@
 
 /* EEVEE INTEGRATION */
 extern "C" {
+#  include "BKE_main.h"
 #  include "DRW_render.h"
 #  include "GPU_framebuffer.h"
 }
@@ -195,6 +196,12 @@ KX_KetsjiEngine::~KX_KetsjiEngine()
 
 	if (m_taskscheduler)
 		BLI_task_scheduler_free(m_taskscheduler);
+
+	Scene *scene = m_scenes->GetFront()->GetBlenderScene();
+	Main *bmain = GetConverter()->GetMain();
+	ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
+	Depsgraph *depsgraph = BKE_scene_get_depsgraph(scene, view_layer, false);
+	BKE_scene_graph_update_tagged(bmain->eval_ctx, depsgraph, bmain, scene, view_layer);
 
 	m_scenes->Release();
 }
