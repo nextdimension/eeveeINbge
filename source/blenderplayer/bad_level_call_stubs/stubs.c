@@ -729,6 +729,7 @@ void UI_GetColorPtrShade3ubv(const unsigned char cp1[3], unsigned char col[3], i
 void UI_ThemeClearColorAlpha(int colorid, float alpha) RET_NONE
 void UI_widget_batch_preset_reset(void) RET_NONE
 void UI_widget_batch_preset_exit(void) RET_NONE
+void UI_widgetbase_draw_cache_flush(void) RET_NONE
 
 void setlinestyle(int nr) RET_NONE
 void set_inverted_drawing(int enable) RET_NONE
