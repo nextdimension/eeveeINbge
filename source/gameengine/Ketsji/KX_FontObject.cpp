@@ -42,7 +42,6 @@
 #include "RAS_BucketManager.h"
 #include "RAS_MaterialBucket.h"
 #include "RAS_BoundingBox.h"
-#include "RAS_TextUser.h"
 
 /* paths needed for font load */
 #include "BLI_blenlib.h"
@@ -128,10 +127,6 @@ void KX_FontObject::ProcessReplica()
 
 void KX_FontObject::AddMeshUser()
 {
-	m_meshUser = new RAS_TextUser(m_pClient_info, m_boundingBox);
-
-	NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
-
 	RAS_BucketManager *bucketManager = GetScene()->GetBucketManager();
 	RAS_DisplayArrayBucket *arrayBucket = bucketManager->GetTextDisplayArrayBucket();
 }
@@ -140,7 +135,7 @@ void KX_FontObject::UpdateBuckets()
 {
 	// Update datas and add mesh slot to be rendered only if the object is not culled.
 	if (m_pSGNode->IsDirty(SG_Node::DIRTY_RENDER)) {
-		NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
+		//NodeGetWorldTransform().getValue(m_meshUser->GetMatrix());
 		m_pSGNode->ClearDirty(SG_Node::DIRTY_RENDER);
 	}
 
@@ -164,17 +159,6 @@ void KX_FontObject::UpdateBuckets()
 	// Orient the spacing vector
 	MT_Vector3 spacing = NodeGetWorldOrientation() * MT_Vector3(0.0f, m_fsize * m_line_spacing, 0.0f) * NodeGetWorldScaling()[1];
 
-	RAS_TextUser *textUser = (RAS_TextUser *)m_meshUser;
-
-	textUser->SetColor(MT_Vector4(color));
-	textUser->SetFrontFace(!m_bIsNegativeScaling);
-	textUser->SetFontId(m_fontid);
-	textUser->SetSize(size);
-	textUser->SetDpi(m_dpi);
-	textUser->SetAspect(aspect);
-	textUser->SetOffset(offset);
-	textUser->SetSpacing(spacing);
-	textUser->SetTexts(m_texts);
 }
 
 void KX_FontObject::SetText(const std::string& text)

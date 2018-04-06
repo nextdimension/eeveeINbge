@@ -37,7 +37,6 @@
 #include "RAS_FrameBuffer.h"
 #include "RAS_ICanvas.h"
 #include "RAS_Rect.h"
-#include "RAS_TextUser.h"
 #include "RAS_Polygon.h"
 #include "RAS_ILightObject.h"
 

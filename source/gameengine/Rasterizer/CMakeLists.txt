@@ -82,7 +82,6 @@ set(SRC
 	RAS_Polygon.cpp
 	RAS_Shader.cpp
 	RAS_Texture.cpp
-	RAS_TextUser.cpp
  	
 	RAS_2DFilterData.h
 	RAS_2DFilter.h
@@ -113,7 +112,6 @@ set(SRC
 	RAS_Rect.h
 	RAS_Shader.h
 	RAS_Texture.h
-	RAS_TextUser.h
 	RAS_TexVert.h
 )
 
