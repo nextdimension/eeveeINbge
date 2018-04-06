@@ -118,7 +118,7 @@ bool KX_NavMeshObject::BuildVertIndArrays(float *&vertices, int& nverts,
 									   int& ndtris, int &vertsPerPoly)
 {
 	/* TODO: This doesn't work currently because of eval_ctx. */
-	Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
+	Main *bmain = KX_GetActiveEngine()->GetMain();
 	EvaluationContext *eval_ctx = bmain->eval_ctx;
     DerivedMesh* dm = mesh_create_derived_no_virtual(eval_ctx, GetScene()->GetBlenderScene(), GetBlenderObject(),
 													nullptr, CD_MASK_MESH);

@@ -105,6 +105,9 @@ public:
 
 private:
 
+
+	struct Main *m_main;
+
 	struct CameraRenderData
 	{
 		CameraRenderData(KX_Camera *rendercam, KX_Camera *cullingcam, const RAS_Rect& area, const RAS_Rect& viewport, RAS_Rasterizer::StereoEye eye);
@@ -290,6 +293,9 @@ private:
 public:
 	KX_KetsjiEngine(KX_ISystem *system);
 	virtual ~KX_KetsjiEngine();
+
+	struct Main *GetMain();
+	void SetMain(struct Main *bmain);
 
 	void BeginFrame();
 	void EndFrame();

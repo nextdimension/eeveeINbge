@@ -440,7 +440,7 @@ void BL_ArmatureObject::ApplyPose()
 		}
 		// update ourself
 		UpdateBlenderObjectMatrix(m_objArma);
-		EvaluationContext *eval_ctx = KX_GetActiveEngine()->GetConverter()->GetMain()->eval_ctx;
+		EvaluationContext *eval_ctx = KX_GetActiveEngine()->GetMain()->eval_ctx;
 		BKE_pose_where_is(eval_ctx, m_scene, m_objArma);
 		// restore ourself
 		memcpy(m_objArma->obmat, m_obmat, sizeof(m_obmat));

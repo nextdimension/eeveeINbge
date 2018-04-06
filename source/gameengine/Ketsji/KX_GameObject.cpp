@@ -178,7 +178,7 @@ KX_GameObject::~KX_GameObject()
 	if (m_isReplica) {
 		Scene *scene = GetScene()->GetBlenderScene();
 		m_pBlenderObject->base_flag &= ~BASE_VISIBLED;
-		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
+		Main *bmain = KX_GetActiveEngine()->GetMain();
 		BKE_collections_object_remove(bmain, &scene->id, m_pBlenderObject, true);
 		BKE_object_free(m_pBlenderObject);
 		DEG_relations_tag_update(bmain);
@@ -527,7 +527,7 @@ void KX_GameObject::ProcessReplica()
 
 	Object *ob = GetBlenderObject();
 	if (ob) {
-		Main *bmain = KX_GetActiveEngine()->GetConverter()->GetMain();
+		Main *bmain = KX_GetActiveEngine()->GetMain();
 		Scene *scene = GetScene()->GetBlenderScene();
 		Object *newob = BKE_object_copy(bmain, m_pBlenderObject);
 		ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);

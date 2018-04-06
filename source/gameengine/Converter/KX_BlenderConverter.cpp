@@ -126,6 +126,8 @@ KX_BlenderConverter::KX_BlenderConverter(Main *maggie, KX_KetsjiEngine *engine)
 {
 	BKE_main_id_tag_all(maggie, LIB_TAG_DOIT, false);  // avoid re-tagging later on
 	m_threadinfo.m_pool = BLI_task_pool_create(engine->GetTaskScheduler(), nullptr);
+
+	engine->SetMain(maggie); //eevee
 }
 
 KX_BlenderConverter::~KX_BlenderConverter()
@@ -141,11 +143,6 @@ KX_BlenderConverter::~KX_BlenderConverter()
 	   Because it needs to lock the mutex, even if there's no active task when it's
 	   in the scene converter destructor. */
 	BLI_task_pool_free(m_threadinfo.m_pool);
-}
-
-Main *KX_BlenderConverter::GetMain()
-{
-	return m_maggie;
 }
 
 Scene *KX_BlenderConverter::GetBlenderSceneForName(const std::string &name)

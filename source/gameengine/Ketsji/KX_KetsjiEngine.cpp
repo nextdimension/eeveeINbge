@@ -170,7 +170,8 @@ KX_KetsjiEngine::KX_KetsjiEngine(KX_ISystem *system)
 	m_showBoundingBox(KX_DebugOption::DISABLE),
 	m_showArmature(KX_DebugOption::DISABLE),
 	m_showCameraFrustum(KX_DebugOption::DISABLE),
-	m_showShadowFrustum(KX_DebugOption::DISABLE)
+	m_showShadowFrustum(KX_DebugOption::DISABLE),
+	m_main(nullptr)
 {
 	for (int i = tc_first; i < tc_numCategories; i++) {
 		m_logger.AddCategory((KX_TimeCategory)i);
@@ -198,12 +199,21 @@ KX_KetsjiEngine::~KX_KetsjiEngine()
 		BLI_task_scheduler_free(m_taskscheduler);
 
 	Scene *scene = m_scenes->GetFront()->GetBlenderScene();
-	Main *bmain = GetConverter()->GetMain();
 	ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
 	Depsgraph *depsgraph = BKE_scene_get_depsgraph(scene, view_layer, false);
-	BKE_scene_graph_update_tagged(bmain->eval_ctx, depsgraph, bmain, scene, view_layer);
+	BKE_scene_graph_update_tagged(m_main->eval_ctx, depsgraph, m_main, scene, view_layer);
 
 	m_scenes->Release();
+}
+
+void KX_KetsjiEngine::SetMain(Main *bmain)
+{
+	m_main = bmain;
+}
+
+Main *KX_KetsjiEngine::GetMain()
+{
+	return m_main;
 }
 
 void KX_KetsjiEngine::SetInputDevice(SCA_IInputDevice *inputDevice)

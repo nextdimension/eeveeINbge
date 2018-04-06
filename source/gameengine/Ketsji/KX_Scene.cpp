@@ -380,7 +380,7 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromCont
 
 
 	KX_KetsjiEngine *engine = KX_GetActiveEngine();
-	Main *bmain = engine->GetConverter()->GetMain();
+	Main *bmain = engine->GetMain();
 	RAS_ICanvas *canvas = engine->GetCanvas();
 	Scene *scene = GetBlenderScene();
 	Object *camob = cam ? cam->GetBlenderObject() : BKE_view_layer_camera_find(BKE_view_layer_from_scene_get(scene));
