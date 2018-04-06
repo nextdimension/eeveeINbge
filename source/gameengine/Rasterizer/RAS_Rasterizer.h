@@ -50,7 +50,6 @@
 class RAS_OpenGLRasterizer;
 class RAS_FrameBuffer;
 class RAS_ICanvas;
-class RAS_MeshSlot;
 class RAS_IDisplayArray;
 class SCA_IScene;
 struct KX_ClientObjectInfo;
@@ -467,9 +466,6 @@ public:
 	 */
 	void SetFocalLength(const float focallength);
 	float GetFocalLength();
-
-	/// Render text mesh slot using BLF functions.
-	void IndexPrimitivesText(RAS_MeshSlot *ms);
  
 	/// Get the modelview matrix according to the stereo settings.
 	MT_Matrix4x4 GetViewMatrix(StereoEye eye, const MT_Transform &camtrans, bool perspective);

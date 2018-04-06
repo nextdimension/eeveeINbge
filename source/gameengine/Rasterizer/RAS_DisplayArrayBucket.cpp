@@ -83,21 +83,6 @@ RAS_MeshMaterial *RAS_DisplayArrayBucket::GetMeshMaterial() const
 	return m_meshMaterial;
 }
 
-void RAS_DisplayArrayBucket::ActivateMesh(RAS_MeshSlot *slot)
-{
-	m_activeMeshSlots.push_back(slot);
-}
-
-void RAS_DisplayArrayBucket::RemoveActiveMeshSlots()
-{
-	m_activeMeshSlots.clear();
-}
-
-bool RAS_DisplayArrayBucket::UseBatching() const
-{
-	return (m_displayArray && m_displayArray->GetType() == RAS_IDisplayArray::BATCHING);
-}
-
 void RAS_DisplayArrayBucket::UpdateActiveMeshSlots(RAS_Rasterizer::DrawType drawingMode, RAS_MaterialShader *shader)
 {
 	bool arrayModified = false;

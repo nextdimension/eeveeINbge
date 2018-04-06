@@ -353,9 +353,6 @@ RAS_MeshUser* RAS_MeshObject::AddMeshUser(void *clientobj, RAS_Deformer *deforme
 		else {
 			arrayBucket = mmat->GetDisplayArrayBucket();
 		}
-
-		RAS_MeshSlot *ms = new RAS_MeshSlot(this, meshUser, arrayBucket);
-		meshUser->AddMeshSlot(ms);
 	}
 	return meshUser;
 }

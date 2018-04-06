@@ -34,7 +34,6 @@
 
 #include "CM_RefCount.h"
 
-#include "RAS_MeshSlot.h"
 #include "RAS_Rasterizer.h"
 
 #include "MT_Transform.h"
@@ -72,8 +71,6 @@ private:
 	RAS_MeshObject *m_mesh;
 	/// The material mesh.
 	RAS_MeshMaterial *m_meshMaterial;
-	/// The list of all visible mesh slots to render this frame.
-	RAS_MeshSlotList m_activeMeshSlots;
 	/// The deformer using this display array.
 	RAS_Deformer *m_deformer;
 
@@ -87,14 +84,6 @@ public:
 	RAS_IDisplayArray *GetDisplayArray() const;
 	RAS_MeshObject *GetMesh() const;
 	RAS_MeshMaterial *GetMeshMaterial() const;
-
-	/// \section Active Mesh Slots Management.
-	void ActivateMesh(RAS_MeshSlot *slot);
-	/// Remove all mesh slots from the list.
-	void RemoveActiveMeshSlots();
-
-	/// \section Render Infos
-	bool UseBatching() const;
 
 	/// Update render infos.
 	void UpdateActiveMeshSlots(RAS_Rasterizer::DrawType drawingMode, RAS_MaterialShader *shader);

@@ -29,7 +29,6 @@
 #ifndef __RAS_MESH_USER_H__
 #define __RAS_MESH_USER_H__
 
-#include "RAS_MeshSlot.h"
 #include "MT_Vector4.h"
 
 class RAS_BoundingBox;
@@ -47,25 +46,19 @@ private:
 	RAS_BoundingBox *m_boundingBox;
 	/// Client object owner of this mesh user.
 	void *m_clientObject;
-	/// Unique mesh slots used for render of this object.
-	RAS_MeshSlotList m_meshSlots;
 
 public:
 	RAS_MeshUser(void *clientobj, RAS_BoundingBox *boundingBox);
 	virtual ~RAS_MeshUser();
 
-	void AddMeshSlot(RAS_MeshSlot *meshSlot);
 	bool GetFrontFace() const;
 	const MT_Vector4& GetColor() const;
 	float *GetMatrix();
 	RAS_BoundingBox *GetBoundingBox() const;
 	void *GetClientObject() const;
-	RAS_MeshSlotList& GetMeshSlots();
 
 	void SetFrontFace(bool frontFace);
 	void SetColor(const MT_Vector4& color);
-
-	void ActivateMeshSlots();
 };
 
 #endif  // __RAS_MESH_USER_H__

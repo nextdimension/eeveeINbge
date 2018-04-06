@@ -42,17 +42,7 @@ RAS_MeshUser::RAS_MeshUser(void *clientobj, RAS_BoundingBox *boundingBox)
 
 RAS_MeshUser::~RAS_MeshUser()
 {
-	for (RAS_MeshSlot *ms : m_meshSlots) {
-		delete ms;
-	}
-	m_meshSlots.clear();
-
 	m_boundingBox->RemoveUser();
-}
-
-void RAS_MeshUser::AddMeshSlot(RAS_MeshSlot *meshSlot)
-{
-	m_meshSlots.push_back(meshSlot);
 }
 
 bool RAS_MeshUser::GetFrontFace() const
@@ -80,11 +70,6 @@ void *RAS_MeshUser::GetClientObject() const
 	return m_clientObject;
 }
 
-RAS_MeshSlotList& RAS_MeshUser::GetMeshSlots()
-{
-	return m_meshSlots;
-}
-
 void RAS_MeshUser::SetFrontFace(bool frontFace)
 {
 	m_frontFace = frontFace;
@@ -93,12 +78,4 @@ void RAS_MeshUser::SetFrontFace(bool frontFace)
 void RAS_MeshUser::SetColor(const MT_Vector4& color)
 {
 	m_color = color;
-}
-
-void RAS_MeshUser::ActivateMeshSlots()
-{
-	for (RAS_MeshSlotList::iterator it = m_meshSlots.begin(), end = m_meshSlots.end(); it != end; ++it) {
-		RAS_MeshSlot *ms = *it;
-		ms->m_displayArrayBucket->ActivateMesh(ms);
-	}
 }

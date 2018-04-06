@@ -32,6 +32,7 @@
 #include "RAS_MeshUser.h"
 
 #include <string>
+#include <vector>
 
 class RAS_TextUser : public RAS_MeshUser
 {

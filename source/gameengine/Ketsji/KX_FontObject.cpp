@@ -134,9 +134,6 @@ void KX_FontObject::AddMeshUser()
 
 	RAS_BucketManager *bucketManager = GetScene()->GetBucketManager();
 	RAS_DisplayArrayBucket *arrayBucket = bucketManager->GetTextDisplayArrayBucket();
-
-	RAS_MeshSlot *ms = new RAS_MeshSlot(nullptr, m_meshUser, arrayBucket);
-	m_meshUser->AddMeshSlot(ms);
 }
 
 void KX_FontObject::UpdateBuckets()
@@ -178,7 +175,6 @@ void KX_FontObject::UpdateBuckets()
 	textUser->SetOffset(offset);
 	textUser->SetSpacing(spacing);
 	textUser->SetTexts(m_texts);
-	textUser->ActivateMeshSlots();
 }
 
 void KX_FontObject::SetText(const std::string& text)

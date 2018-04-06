@@ -66,6 +66,9 @@ extern "C" {
 #include "BLI_blenlib.h"
 #include "BLI_math.h"
 
+#include "KX_Globals.h"
+#include "KX_KetsjiEngine.h"
+
 BL_ModifierDeformer::~BL_ModifierDeformer()
 {
 	if (m_dm) {
@@ -166,7 +169,6 @@ DerivedMesh *BL_ModifierDeformer::GetPhysicsMesh()
 bool BL_ModifierDeformer::Update(void)
 {
 	/* TODO: This doesn't work currently because of eval_ctx. */
-#if 0
 	bool bShapeUpdate = BL_ShapeDeformer::Update();
 
 	if (bShapeUpdate || m_lastModifierUpdate != m_gameobj->GetLastFrame()) {
@@ -181,7 +183,7 @@ bool BL_ModifierDeformer::Update(void)
 			Mesh *oldmesh = (Mesh *)blendobj->data;
 			blendobj->data = m_bmesh;
 			/* execute the modifiers */
-			DerivedMesh *dm = mesh_create_derived_no_virtual(m_scene, blendobj, m_transverts, CD_MASK_MESH);
+			DerivedMesh *dm = mesh_create_derived_no_virtual(KX_GetActiveEngine()->GetEvalContext(), m_scene, blendobj, m_transverts, CD_MASK_MESH);
 			/* restore object data */
 			blendobj->data = oldmesh;
 			/* free the current derived mesh and replace, (dm should never be nullptr) */
@@ -213,16 +215,9 @@ bool BL_ModifierDeformer::Update(void)
 		}
 		m_lastModifierUpdate = m_gameobj->GetLastFrame();
 		bShapeUpdate = true;
-
-		RAS_MeshUser *meshUser = m_gameobj->GetMeshUser();
-		for (RAS_MeshSlot *slot : meshUser->GetMeshSlots()) {
-			slot->m_pDerivedMesh = m_dm;
-		}
 	}
 
 	return bShapeUpdate;
-#endif
-	return false;
 }
 
 bool BL_ModifierDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *array)
