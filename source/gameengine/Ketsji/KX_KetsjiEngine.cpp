@@ -184,6 +184,8 @@ KX_KetsjiEngine::KX_KetsjiEngine(KX_ISystem *system)
 	m_taskscheduler = BLI_task_scheduler_create(TASK_SCHEDULER_AUTO_THREADS);
 
 	m_scenes = new CListValue<KX_Scene>();
+
+	m_evalCtx = DEG_evaluation_context_new(DAG_EVAL_VIEWPORT);
 }
 
 /**
@@ -201,9 +203,11 @@ KX_KetsjiEngine::~KX_KetsjiEngine()
 	Scene *scene = m_scenes->GetFront()->GetBlenderScene();
 	ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
 	Depsgraph *depsgraph = BKE_scene_get_depsgraph(scene, view_layer, false);
-	BKE_scene_graph_update_tagged(m_main->eval_ctx, depsgraph, m_main, scene, view_layer);
+	BKE_scene_graph_update_tagged(m_evalCtx, depsgraph, m_main, scene, view_layer);
 
 	m_scenes->Release();
+
+	DEG_evaluation_context_free(m_evalCtx);
 }
 
 void KX_KetsjiEngine::SetMain(Main *bmain)
@@ -214,6 +218,11 @@ void KX_KetsjiEngine::SetMain(Main *bmain)
 Main *KX_KetsjiEngine::GetMain()
 {
 	return m_main;
+}
+
+EvaluationContext *KX_KetsjiEngine::GetEvalContext()
+{
+	return m_evalCtx;
 }
 
 void KX_KetsjiEngine::SetInputDevice(SCA_IInputDevice *inputDevice)

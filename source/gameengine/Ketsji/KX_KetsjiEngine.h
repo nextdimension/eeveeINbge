@@ -107,6 +107,7 @@ private:
 
 
 	struct Main *m_main;
+	struct EvaluationContext *m_evalCtx;
 
 	struct CameraRenderData
 	{
@@ -296,6 +297,7 @@ public:
 
 	struct Main *GetMain();
 	void SetMain(struct Main *bmain);
+	struct EvaluationContext *GetEvalContext();
 
 	void BeginFrame();
 	void EndFrame();

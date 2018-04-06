@@ -171,17 +171,17 @@ KX_GameObject::~KX_GameObject()
 	}
 #endif // WITH_PYTHON
 
-	if (GetBlenderObject()) {
-		copy_m4_m4(GetBlenderObject()->obmat, m_savedObmat);
+	if (GetBlenderObject()) { //eevee
+		copy_m4_m4(GetBlenderObject()->obmat, m_savedObmat); //eevee
 	}
 
-	if (m_isReplica) {
-		Scene *scene = GetScene()->GetBlenderScene();
-		m_pBlenderObject->base_flag &= ~BASE_VISIBLED;
-		Main *bmain = KX_GetActiveEngine()->GetMain();
-		BKE_collections_object_remove(bmain, &scene->id, m_pBlenderObject, true);
-		BKE_object_free(m_pBlenderObject);
-		DEG_relations_tag_update(bmain);
+	if (m_isReplica) { //eevee
+		Scene *scene = GetScene()->GetBlenderScene(); //eevee
+		m_pBlenderObject->base_flag &= ~BASE_VISIBLED; //eevee
+		Main *bmain = KX_GetActiveEngine()->GetMain(); //eevee
+		BKE_collections_object_remove(bmain, &scene->id, m_pBlenderObject, true); //eevee
+		BKE_object_free(m_pBlenderObject); //eevee
+		DEG_relations_tag_update(bmain); //eevee
 	}
 
 	RemoveMeshes();
@@ -526,15 +526,15 @@ void KX_GameObject::ProcessReplica()
 	SCA_IObject::ProcessReplica();
 
 	Object *ob = GetBlenderObject();
-	if (ob) {
-		Main *bmain = KX_GetActiveEngine()->GetMain();
-		Scene *scene = GetScene()->GetBlenderScene();
-		Object *newob = BKE_object_copy(bmain, m_pBlenderObject);
-		ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
+	if (ob) { //eevee
+		Main *bmain = KX_GetActiveEngine()->GetMain(); //eevee
+		Scene *scene = GetScene()->GetBlenderScene(); //eevee
+		Object *newob = BKE_object_copy(bmain, m_pBlenderObject); //eevee
+		ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene); //eevee
 		BKE_collection_object_add_from(scene, BKE_view_layer_camera_find(view_layer), newob); // Add the object to the collection where is the active camera
-		DEG_relations_tag_update(bmain);
-		m_pBlenderObject = newob;
-		m_isReplica = true;
+		DEG_relations_tag_update(bmain); //eevee
+		m_pBlenderObject = newob; //eevee
+		m_isReplica = true; //eevee
 	}
 
 	m_pGraphicController = nullptr;
