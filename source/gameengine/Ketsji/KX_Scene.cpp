@@ -1529,10 +1529,10 @@ static void update_anim_thread_func(TaskPool *pool, void *taskdata, int UNUSED(t
 
 		// Check for meshes that haven't been culled
 		for (KX_GameObject *child : children) {
-			if (!child->GetCulled()) {
+			//if (!child->GetCulled()) { // eevee temporarly disable animation culling for armatures. Needs to restore SetCulled/GetCulled maybe with eevee culling?
 				needs_update = true;
 				break;
-			}
+			//}
 
 			if (child->GetMeshCount() == 0)
 				has_non_mesh = true;
