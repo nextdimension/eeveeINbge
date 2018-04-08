@@ -360,6 +360,16 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromCont
 		gameobj->TagForUpdate();
 	}
 
+	/* Update shadow cubes:  Perfs WARNING */
+	EEVEE_LampsInfo *linfo = EEVEE_view_layer_data_get()->lamps;
+	Object *ob;
+	int i;
+	/* Render each shadow to one layer of the array */
+	for (i = 0; (ob = linfo->shadow_cube_ref[i]) && (i < MAX_SHADOW_CUBE); i++) {
+		EEVEE_LampEngineData *led = EEVEE_lamp_data_ensure(ob);
+		led->need_update = true; // WARNING: kills perfs. have to see if we can do another culling test or reduce shadow frustum size or...
+	}
+
 	bool reset_taa_samples = !ObjectsAreStatic();
 	m_staticObjects.clear();
 
