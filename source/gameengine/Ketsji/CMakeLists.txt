@@ -126,7 +126,6 @@ set(SRC
 	KX_TextMaterial.cpp
 	KX_TimeCategoryLogger.cpp
 	KX_TimeLogger.cpp
-	KX_TrackToActuator.cpp
 	KX_VehicleWrapper.cpp
 	KX_VertexProxy.cpp
 	KX_WorldInfo.cpp
@@ -194,7 +193,6 @@ set(SRC
 	KX_TimeCategoryLogger.h
 	KX_TimeLogger.h
 	KX_CollisionEventManager.h
-	KX_TrackToActuator.h
 	KX_VehicleWrapper.h
 	KX_VertexProxy.h
 	KX_WorldInfo.h

@@ -59,7 +59,7 @@
 #include "KX_SceneActuator.h"
 #include "KX_SoundActuator.h"
 #include "SCA_ObjectActuator.h"
-#include "KX_TrackToActuator.h"
+#include "SCA_TrackToActuator.h"
 #include "SCA_ConstraintActuator.h"
 #include "SCA_CameraActuator.h"
 #include "SCA_GameActuator.h"
@@ -485,7 +485,7 @@ void BL_ConvertActuators(const char* maggiename,
 						if (editobact->ob)
 							originalval = converter.FindGameObject(editobact->ob);
 							
-						KX_TrackToActuator* tmptrackact = new KX_TrackToActuator(
+						SCA_TrackToActuator* tmptrackact = new SCA_TrackToActuator(
 						            gameobj,
 						            originalval,
 						            editobact->time,

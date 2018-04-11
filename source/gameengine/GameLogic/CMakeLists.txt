@@ -98,6 +98,7 @@ set(SRC
 	SCA_RandomSensor.cpp
 	SCA_RaySensor.cpp
 	SCA_TimeEventManager.cpp
+	SCA_TrackToActuator.cpp
 	SCA_VibrationActuator.cpp
 	SCA_VisibilityActuator.cpp
 	SCA_XNORController.cpp
@@ -154,6 +155,7 @@ set(SRC
 	SCA_RandomSensor.h
 	SCA_RaySensor.h
 	SCA_TimeEventManager.h
+	SCA_TrackToActuator.h
 	SCA_VibrationActuator.h
 	SCA_VisibilityActuator.h
 	SCA_XNORController.h
