@@ -31,29 +31,9 @@
 
 
 #include "KX_WorldInfo.h"
-#include "KX_PyMath.h"
-#include "RAS_Rasterizer.h"
-#include "GPU_material.h"
 
-/* This little block needed for linking to Blender... */
-#ifdef WIN32
-#include "BLI_winstuff.h"
-#endif
-
-extern "C" {
-#  include "eevee_private.h"
-#  include "DRW_render.h"
-}
-
-/* This list includes only data type definitions */
 #include "DNA_scene_types.h"
 #include "DNA_world_types.h"
-
-#include "BLI_math.h"
-
-#include "BKE_global.h"
-#include "BKE_scene.h"
-/* end of blender include block */
 
 KX_WorldInfo::KX_WorldInfo(Scene *blenderscene, World *blenderworld)
 	:m_scene(blenderscene)
@@ -68,11 +48,6 @@ KX_WorldInfo::~KX_WorldInfo()
 const std::string& KX_WorldInfo::GetName()
 {
 	return m_name;
-}
-
-void KX_WorldInfo::RenderBackground()
-{
-	//DRW_draw_pass(EEVEE_engine_data_get()->psl->background_pass);
 }
 
 #ifdef WITH_PYTHON
