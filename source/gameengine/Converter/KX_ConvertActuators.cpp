@@ -71,7 +71,7 @@
 #include "KX_ParentActuator.h"
 #include "KX_SCA_DynamicActuator.h"
 #include "KX_SteeringActuator.h"
-#include "KX_MouseActuator.h"
+#include "SCA_MouseActuator.h"
 
 #include "KX_Scene.h"
 #include "KX_KetsjiEngine.h"
@@ -1057,17 +1057,17 @@ void BL_ConvertActuators(const char* maggiename,
 		case ACT_MOUSE:
 			{
 				bMouseActuator* mouAct = (bMouseActuator*) bact->data;
-				int mode = KX_MouseActuator::KX_ACT_MOUSE_NODEF;
+				int mode = SCA_MouseActuator::KX_ACT_MOUSE_NODEF;
 
 				switch (mouAct->type) {
 					case ACT_MOUSE_VISIBILITY:
 					{
-						mode = KX_MouseActuator::KX_ACT_MOUSE_VISIBILITY;
+						mode = SCA_MouseActuator::KX_ACT_MOUSE_VISIBILITY;
 						break;
 					}
 					case ACT_MOUSE_LOOK:
 					{
-						mode = KX_MouseActuator::KX_ACT_MOUSE_LOOK;
+						mode = SCA_MouseActuator::KX_ACT_MOUSE_LOOK;
 						break;
 					}
 				}
@@ -1079,7 +1079,7 @@ void BL_ConvertActuators(const char* maggiename,
 
 				SCA_MouseManager* eventmgr = (SCA_MouseManager*) logicmgr->FindEventManager(SCA_EventManager::MOUSE_EVENTMGR);
 				if (eventmgr) {
-					KX_MouseActuator* tmpbaseact = new KX_MouseActuator(gameobj,
+					SCA_MouseActuator* tmpbaseact = new SCA_MouseActuator(gameobj,
 																		ketsjiEngine,
 																		eventmgr,
 																		mode,
