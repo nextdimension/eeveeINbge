@@ -25,7 +25,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_RadarSensor.h
+/** \file SCA_RadarSensor.h
  *  \ingroup ketsji
  */
 
@@ -38,7 +38,7 @@
 /**
  * Radar 'cone' sensor. Very similar to a near-sensor, but instead of a sphere, a cone is used.
  */
-class KX_RadarSensor : public KX_NearSensor
+class SCA_RadarSensor : public KX_NearSensor
 {
  protected:
 	Py_Header
@@ -63,7 +63,7 @@ class KX_RadarSensor : public KX_NearSensor
 	
 public:
 
-	KX_RadarSensor(SCA_EventManager* eventmgr,
+	SCA_RadarSensor(SCA_EventManager* eventmgr,
 		KX_GameObject* gameobj,
 			PHY_IPhysicsController* physCtrl,
 			double coneradius,
@@ -73,8 +73,8 @@ public:
 			double resetmargin,
 			bool bFindMaterial,
 			const std::string& touchedpropname);
-	KX_RadarSensor();
-	virtual ~KX_RadarSensor();
+	SCA_RadarSensor();
+	virtual ~SCA_RadarSensor();
 	virtual void SynchronizeTransform();
 	virtual CValue* GetReplica();
 
