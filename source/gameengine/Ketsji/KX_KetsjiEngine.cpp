@@ -197,13 +197,9 @@ KX_KetsjiEngine::~KX_KetsjiEngine()
 	Py_CLEAR(m_pyprofiledict);
 #endif
 
-	if (m_taskscheduler)
+	if (m_taskscheduler) {
 		BLI_task_scheduler_free(m_taskscheduler);
-
-	Scene *scene = m_scenes->GetFront()->GetBlenderScene();
-	ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
-	Depsgraph *depsgraph = BKE_scene_get_depsgraph(scene, view_layer, false);
-	BKE_scene_graph_update_tagged(m_evalCtx, depsgraph, m_main, scene, view_layer);
+	}
 
 	m_scenes->Release();
 

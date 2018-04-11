@@ -310,6 +310,11 @@ KX_Scene::~KX_Scene()
 		delete m_bucketmanager;
 	}
 
+	Scene *scene = GetBlenderScene();
+	ViewLayer *view_layer = BKE_view_layer_from_scene_get(scene);
+	Depsgraph *depsgraph = BKE_scene_get_depsgraph(scene, view_layer, false);
+	BKE_scene_graph_update_tagged(KX_GetActiveEngine()->GetEvalContext(), depsgraph, KX_GetActiveEngine()->GetMain(), scene, view_layer);
+
 	DRW_game_render_loop_end();
 	first_run = true;
 
