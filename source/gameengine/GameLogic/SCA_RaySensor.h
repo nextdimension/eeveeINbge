@@ -25,7 +25,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_RaySensor.h
+/** \file SCA_RaySensor.h
  *  \ingroup ketsji
  *  \brief Cast a ray and feel for objects
  */
@@ -43,7 +43,7 @@
 struct KX_ClientObjectInfo;
 class KX_RayCast;
 
-class KX_RaySensor : public SCA_ISensor
+class SCA_RaySensor : public SCA_ISensor
 {
 	Py_Header
 	std::string		m_propertyname;
@@ -62,7 +62,7 @@ class KX_RaySensor : public SCA_ISensor
 	std::string		m_hitMaterial;
 
 public:
-	KX_RaySensor(class SCA_EventManager* eventmgr,
+	SCA_RaySensor(class SCA_EventManager* eventmgr,
 					SCA_IObject* gameobj,
 					const std::string& propname,
 					bool bFindMaterial,
@@ -71,7 +71,7 @@ public:
 					int axis,
 					int mask,
 					class KX_Scene* ketsjiScene);
-	virtual ~KX_RaySensor();
+	virtual ~SCA_RaySensor();
 	virtual CValue* GetReplica();
 
 	virtual bool Evaluate();
