@@ -147,6 +147,8 @@ protected:
 
 	std::vector<KX_GameObject *>m_staticObjects;
 	std::vector<KX_GameObject *>m_lightProbes;
+
+	bool m_resetTaaSamples;
 	/*************************************************/
 
 	RAS_BucketManager*	m_bucketmanager;
@@ -336,6 +338,8 @@ public:
 
 	void AppendProbeList(KX_GameObject *probe);
 	std::vector<KX_GameObject *>GetProbeList();
+
+	void ResetTaaSamples();
 
 	bool ObjectsAreStatic();
 	void RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromConstructor);

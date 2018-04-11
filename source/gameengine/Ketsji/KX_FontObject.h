@@ -64,6 +64,9 @@ public:
 	void SetText(const std::string& text);
 	/// Update text from property.
 	void UpdateTextFromProperty();
+
+	void SetCurveFromString(const std::string text);
+
 	/// Return text dimensions in blender unit.
 	const MT_Vector2 GetTextDimensions();
 
@@ -77,6 +80,8 @@ protected:
 	float m_resolution;
 	float m_line_spacing;
 	MT_Vector3 m_offset;
+
+	std::string m_backupText;
 
 	/// needed for drawing routine
 	class RAS_Rasterizer *m_rasterizer;

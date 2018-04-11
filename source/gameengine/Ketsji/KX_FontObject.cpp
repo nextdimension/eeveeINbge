@@ -50,7 +50,9 @@
 #include "DNA_packedFile_types.h"
 
 extern "C" {
-#include "BLF_api.h"
+#  include "BLF_api.h"
+#  include "depsgraph/DEG_depsgraph_query.h"
+#  include "MEM_guardedalloc.h"
 }
 
 #include "CM_Message.h"
@@ -99,12 +101,16 @@ KX_FontObject::KX_FontObject(void *sgReplicationInfo,
 	m_fontid = GetFontId(text->vfont);
 
 	SetText(text->str);
+
+	/* We do a backup from original text to restore it at ge exit */
+	m_backupText = text->str;
 }
 
 KX_FontObject::~KX_FontObject()
 {
 	//remove font from the scene list
 	//it's handled in KX_Scene::NewRemoveObject
+	SetCurveFromString(m_backupText);
 }
 
 CValue *KX_FontObject::GetReplica()
@@ -131,12 +137,40 @@ void KX_FontObject::SetText(const std::string& text)
 	m_texts = split_string(text);
 }
 
+void KX_FontObject::SetCurveFromString(const std::string text)
+{
+	Object *ob = GetBlenderObject();
+	Curve *cu = (Curve *)ob->data;
+
+	size_t len_bytes;
+	size_t len_chars = BLI_strlen_utf8_ex(text.c_str(), &len_bytes);
+
+	cu->len_wchar = len_chars;
+	cu->len = len_bytes;
+	cu->pos = len_chars;
+
+	if (cu->str)
+		MEM_freeN(cu->str);
+	if (cu->strinfo)
+		MEM_freeN(cu->strinfo);
+
+	cu->str = (char *)MEM_mallocN(len_bytes + sizeof(wchar_t), "str");
+	cu->strinfo = (CharInfo *)MEM_callocN((len_chars + 4) * sizeof(CharInfo), "strinfo");
+
+	BLI_strncpy(cu->str, text.c_str(), len_bytes + 1);
+
+	DEG_id_tag_update(&ob->id, OB_RECALC_DATA);
+	GetScene()->ResetTaaSamples();
+}
+
 void KX_FontObject::UpdateTextFromProperty()
 {
 	// Allow for some logic brick control
 	CValue *prop = GetProperty("Text");
 	if (prop && prop->GetText() != m_text) {
-		SetText(prop->GetText());
+		std::string text = prop->GetText();
+		SetText(text);
+		SetCurveFromString(text);
 	}
 }
 

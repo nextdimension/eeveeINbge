@@ -236,6 +236,7 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 
 	/*************************************************EEVEE INTEGRATION***********************************************************/
 	m_staticObjects = {};
+	m_resetTaaSamples = false;
 
 	RenderAfterCameraSetup(KX_GetActiveEngine()->GetRasterizer(), true); // Init eevee data in scene constructor
 	/******************************************************************************************************************************/
@@ -349,6 +350,11 @@ bool KX_Scene::ObjectsAreStatic()
 {
 	return m_staticObjects.size() == GetObjectList()->GetCount();
 }
+
+void KX_Scene::ResetTaaSamples()
+{
+	m_resetTaaSamples = true;
+}
 /************************End of TAA UTILS**************************/
 
 /****CALL RENDER MAINLOOP*********/
@@ -370,8 +376,9 @@ void KX_Scene::RenderAfterCameraSetup(RAS_Rasterizer *rasty, bool calledFromCont
 	//	led->need_update = true; // WARNING: kills perfs. have to see if we can do another culling test or reduce shadow frustum size or...
 	//}
 
-	bool reset_taa_samples = !ObjectsAreStatic();
+	bool reset_taa_samples = !ObjectsAreStatic() || m_resetTaaSamples;
 	m_staticObjects.clear();
+	m_resetTaaSamples = false;
 
 	KX_Camera *cam = GetActiveCamera();
 	if (cam) {
