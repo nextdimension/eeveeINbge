@@ -74,41 +74,47 @@ extern "C" {
 #include "KX_PyConstraintBinding.h"
 
 #include "KX_KetsjiEngine.h"
-#include "SCA_RadarSensor.h"
-#include "SCA_RaySensor.h"
-#include "SCA_ArmatureSensor.h"
-#include "SCA_SceneActuator.h"
-#include "SCA_GameActuator.h"
-#include "SCA_ParentActuator.h"
-#include "SCA_DynamicActuator.h"
-#include "SCA_SteeringActuator.h"
-#include "KX_NavMeshObject.h"
-#include "SCA_MouseActuator.h"
-#include "SCA_TrackToActuator.h"
 
-#include "SCA_IInputDevice.h"
-#include "SCA_PropertySensor.h"
-#include "SCA_RandomActuator.h"
-#include "SCA_JoystickManager.h" /* JOYINDEX_MAX */
-#include "SCA_PythonJoystick.h"
-#include "SCA_PythonKeyboard.h"
-#include "SCA_PythonMouse.h"
-#include "SCA_2DFilterActuator.h"
-#include "SCA_ConstraintActuator.h"
-#include "SCA_SoundActuator.h"
-#include "SCA_StateActuator.h"
+#include "KX_NavMeshObject.h"
+
 #include "BL_ActionActuator.h"
 #include "BL_ArmatureObject.h"
+
 #include "RAS_Rasterizer.h"
 #include "RAS_ICanvas.h"
 #include "RAS_BucketManager.h"
 #include "RAS_2DFilterManager.h"
+
 #include "MT_Vector3.h"
 #include "MT_Vector4.h"
+
 #include "EXP_ListValue.h"
 #include "EXP_InputParser.h"
+
 #include "KX_Scene.h"
 #include "KX_Globals.h"
+
+#include "SCA_2DFilterActuator.h"
+#include "SCA_ArmatureSensor.h"
+#include "SCA_ConstraintActuator.h"
+#include "SCA_DynamicActuator.h"
+#include "SCA_GameActuator.h"
+#include "SCA_IInputDevice.h"
+#include "SCA_JoystickManager.h" /* JOYINDEX_MAX */
+#include "SCA_MouseActuator.h"
+#include "SCA_ParentActuator.h"
+#include "SCA_PropertySensor.h"
+#include "SCA_PythonJoystick.h"
+#include "SCA_PythonKeyboard.h"
+#include "SCA_PythonMouse.h"
+#include "SCA_RadarSensor.h"
+#include "SCA_RandomActuator.h"
+#include "SCA_RaySensor.h"
+#include "SCA_SceneActuator.h"
+#include "SCA_SoundActuator.h"
+#include "SCA_StateActuator.h"
+#include "SCA_SteeringActuator.h"
+#include "SCA_TrackToActuator.h"
 
 #include "KX_NetworkMessageScene.h" //Needed for sendMessage()
 
