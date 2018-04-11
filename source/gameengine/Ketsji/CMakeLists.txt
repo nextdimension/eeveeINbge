@@ -112,7 +112,6 @@ set(SRC
 	KX_PythonInitTypes.cpp
 	KX_PythonMain.cpp
 	KX_RayCast.cpp
-	KX_SCA_AddObjectActuator.cpp
 	KX_SCA_DynamicActuator.cpp
 	KX_SCA_EndObjectActuator.cpp
 	KX_SCA_ReplaceMeshActuator.cpp
@@ -182,7 +181,6 @@ set(SRC
 	KX_PythonInitTypes.h
 	KX_PythonMain.h
 	KX_RayCast.h
-	KX_SCA_AddObjectActuator.h
 	KX_SCA_DynamicActuator.h
 	KX_SCA_EndObjectActuator.h
 	KX_SCA_ReplaceMeshActuator.h
