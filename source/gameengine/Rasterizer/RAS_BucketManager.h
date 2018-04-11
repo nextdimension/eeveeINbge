@@ -60,36 +60,16 @@ private:
 		NUM_BUCKET_TYPE,
 	};
 
-	/// Override shaders.
-	enum OverrideShaderType {
-		OVERRIDE_SHADER_NONE = 0,
-		OVERRIDE_SHADER_BLACK,
-		OVERRIDE_SHADER_SHADOW,
-		OVERRIDE_SHADER_MAX
-	};
-
 	BucketList m_buckets[NUM_BUCKET_TYPE];
-
-	struct TextMaterial
-	{
-		RAS_IPolyMaterial *m_material;
-		RAS_DisplayArrayBucket *m_arrayBucket;
-	} m_text;
-
-	void RenderBasicBuckets(RAS_Rasterizer *rasty, BucketType bucketType);
-	void RenderSortedBuckets(RAS_Rasterizer *rasty, BucketType bucketType);
 
 public:
 	/** Initialize bucket manager and create material bucket for the text material.
 	 * \param textMaterial The material used to render texts.
 	 */
-	RAS_BucketManager(RAS_IPolyMaterial *textMaterial);
+	RAS_BucketManager();
 	virtual ~RAS_BucketManager();
 
-	void Renderbuckets(const MT_Transform & cameratrans, RAS_Rasterizer *rasty, RAS_FrameBuffer *frameBuffer);
-
 	RAS_MaterialBucket *FindBucket(RAS_IPolyMaterial *material, bool &bucketCreated);
-	RAS_DisplayArrayBucket *GetTextDisplayArrayBucket() const;
 
 	void UpdateShaders(RAS_IPolyMaterial *material = nullptr);
 	void ReleaseMaterials(RAS_IPolyMaterial *material = nullptr);

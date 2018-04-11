@@ -100,8 +100,6 @@ void KX_FontObject::ProcessReplica()
 
 void KX_FontObject::AddMeshReadOnlyDisplayArray() // For text physics I guess
 {
-	RAS_BucketManager *bucketManager = GetScene()->GetBucketManager();
-	RAS_DisplayArrayBucket *arrayBucket = bucketManager->GetTextDisplayArrayBucket();
 }
 
 void KX_FontObject::SetText(const std::string& text)
