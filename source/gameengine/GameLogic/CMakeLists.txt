@@ -98,6 +98,7 @@ set(SRC
 	SCA_RandomNumberGenerator.cpp
 	SCA_RandomSensor.cpp
 	SCA_RaySensor.cpp
+	SCA_ReplaceMeshActuator.cpp
 	SCA_SoundActuator.cpp
 	SCA_TimeEventManager.cpp
 	SCA_TrackToActuator.cpp
@@ -157,6 +158,7 @@ set(SRC
 	SCA_RandomNumberGenerator.h
 	SCA_RandomSensor.h
 	SCA_RaySensor.h
+	SCA_ReplaceMeshActuator.h
 	SCA_SoundActuator.h
 	SCA_TimeEventManager.h
 	SCA_TrackToActuator.h

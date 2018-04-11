@@ -25,7 +25,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SCA_ReplaceMeshActuator.h
+/** \file SCA_ReplaceMeshActuator.h
  *  \ingroup ketsji
  *  \brief Add object to the game world on action of this actuator
  *  \attention Previously existed as: source/gameengine/GameLogic/SCA_ReplaceMeshActuator.h
@@ -44,7 +44,7 @@
 class KX_Scene;
 class KX_GameObject;
 
-class KX_SCA_ReplaceMeshActuator : public SCA_IActuator
+class SCA_ReplaceMeshActuator : public SCA_IActuator
 {
 	Py_Header
 
@@ -55,7 +55,7 @@ class KX_SCA_ReplaceMeshActuator : public SCA_IActuator
 	bool m_use_phys;
 
  public:
-	KX_SCA_ReplaceMeshActuator(
+	SCA_ReplaceMeshActuator(
 		KX_GameObject *gameobj, 
 		RAS_MeshObject *mesh, 
 		KX_Scene *scene,
@@ -63,7 +63,7 @@ class KX_SCA_ReplaceMeshActuator : public SCA_IActuator
 		bool use_phys
 	);
 
-	~KX_SCA_ReplaceMeshActuator(
+	~SCA_ReplaceMeshActuator(
 	);
 
 		CValue* 
@@ -86,7 +86,7 @@ class KX_SCA_ReplaceMeshActuator : public SCA_IActuator
 	static PyObject *pyattr_get_mesh(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_mesh(PyObjectPlus *self, const struct KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
 
-	KX_PYMETHOD_DOC(KX_SCA_ReplaceMeshActuator,instantReplaceMesh);
+	KX_PYMETHOD_DOC(SCA_ReplaceMeshActuator,instantReplaceMesh);
 
 #endif  /* WITH_PYTHON */
 

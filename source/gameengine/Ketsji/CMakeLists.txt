@@ -112,7 +112,6 @@ set(SRC
 	KX_PythonInitTypes.cpp
 	KX_PythonMain.cpp
 	KX_RayCast.cpp
-	KX_SCA_ReplaceMeshActuator.cpp
 	KX_SG_BoneParentNodeRelationship.cpp
 	KX_SG_NodeRelationships.cpp
 	KX_ScalarInterpolator.cpp
@@ -176,7 +175,6 @@ set(SRC
 	KX_PythonInitTypes.h
 	KX_PythonMain.h
 	KX_RayCast.h
-	KX_SCA_ReplaceMeshActuator.h
 	KX_SG_BoneParentNodeRelationship.h
 	KX_SG_NodeRelationships.h
 	KX_ScalarInterpolator.h
