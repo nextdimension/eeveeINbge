@@ -37,6 +37,8 @@ set(INC
 	../../blender/blenkernel
 	../../blender/makesdna
 	../../blender/python/generic
+	../../../extern/recastnavigation/Detour/Include
+	../../../extern/recastnavigation/Recast/Include
 	../../../intern/termcolor
 	../../../intern/ghost
 )
@@ -100,6 +102,7 @@ set(SRC
 	SCA_RaySensor.cpp
 	SCA_ReplaceMeshActuator.cpp
 	SCA_SoundActuator.cpp
+	SCA_SteeringActuator.cpp
 	SCA_TimeEventManager.cpp
 	SCA_TrackToActuator.cpp
 	SCA_VibrationActuator.cpp
@@ -160,6 +163,7 @@ set(SRC
 	SCA_RaySensor.h
 	SCA_ReplaceMeshActuator.h
 	SCA_SoundActuator.h
+	SCA_SteeringActuator.h
 	SCA_TimeEventManager.h
 	SCA_TrackToActuator.h
 	SCA_VibrationActuator.h
