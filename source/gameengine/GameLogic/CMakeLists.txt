@@ -80,6 +80,7 @@ set(SRC
 	SCA_MouseSensor.cpp
 	SCA_NANDController.cpp
 	SCA_NORController.cpp
+	SCA_ObjectActuator.cpp
 	SCA_ORController.cpp
 	SCA_PropertyActuator.cpp
 	SCA_PropertySensor.cpp
@@ -128,6 +129,7 @@ set(SRC
 	SCA_MouseSensor.h
 	SCA_NANDController.h
 	SCA_NORController.h
+	SCA_ObjectActuator.h
 	SCA_ORController.h
 	SCA_PropertyActuator.h
 	SCA_PropertySensor.h

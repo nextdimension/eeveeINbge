@@ -25,7 +25,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_ObjectActuator.h
+/** \file SCA_ObjectActuator.h
  *  \ingroup ketsji
  *  \brief Do translation/rotation actions
  */
@@ -37,7 +37,7 @@
 #include "MT_Vector3.h"
 
 #ifdef USE_MATHUTILS
-void KX_ObjectActuator_Mathutils_Callback_Init(void);
+void SCA_ObjectActuator_Mathutils_Callback_Init(void);
 #endif
 
 class KX_GameObject;
@@ -86,7 +86,7 @@ struct KX_LocalFlags {
 	bool ZeroAngularVelocity;
 };
 
-class KX_ObjectActuator : public SCA_IActuator
+class SCA_ObjectActuator : public SCA_IActuator
 {
 	Py_Header
 
@@ -130,7 +130,7 @@ public:
 		KX_OBJECT_ACT_MAX
 	};
 
-	KX_ObjectActuator(
+	SCA_ObjectActuator(
 		SCA_IObject* gameobj,
 		KX_GameObject* refobj,
 		const MT_Vector3& force,
@@ -142,7 +142,7 @@ public:
 		const short damping,
 		const KX_LocalFlags& flag
 	);
-	~KX_ObjectActuator();
+	~SCA_ObjectActuator();
 	CValue* GetReplica();
 	void ProcessReplica();
 	bool UnlinkObject(SCA_IObject* clientobj);
@@ -188,7 +188,7 @@ public:
 	// This lets the attribute macros use UpdateFuzzyFlags()
 	static int PyUpdateFuzzyFlags(PyObjectPlus *self, const PyAttributeDef *attrdef)
 	{
-		KX_ObjectActuator* act = reinterpret_cast<KX_ObjectActuator*>(self);
+		SCA_ObjectActuator* act = reinterpret_cast<SCA_ObjectActuator*>(self);
 		act->UpdateFuzzyFlags();
 		return 0;
 	}
@@ -196,7 +196,7 @@ public:
 	// This is the keep the PID values in check after they are assigned with Python
 	static int PyCheckPid(PyObjectPlus *self, const PyAttributeDef *attrdef)
 	{
-		KX_ObjectActuator* act = reinterpret_cast<KX_ObjectActuator*>(self);
+		SCA_ObjectActuator* act = reinterpret_cast<SCA_ObjectActuator*>(self);
 
 		//P 0 to 200
 		if (act->m_pid[0] < 0) {

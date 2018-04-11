@@ -62,7 +62,7 @@
 #include "SCA_MouseFocusSensor.h"
 #include "KX_NetworkMessageActuator.h"
 #include "KX_NetworkMessageSensor.h"
-#include "KX_ObjectActuator.h"
+#include "SCA_ObjectActuator.h"
 #include "KX_ParentActuator.h"
 #include "KX_PolyProxy.h"
 #include "KX_SCA_AddObjectActuator.h"
@@ -234,7 +234,7 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 		PyType_Ready_Attr(dict, KX_NearSensor, init_getset);
 		PyType_Ready_Attr(dict, KX_NetworkMessageActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_NetworkMessageSensor, init_getset);
-		PyType_Ready_Attr(dict, KX_ObjectActuator, init_getset);
+		PyType_Ready_Attr(dict, SCA_ObjectActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_ParentActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_PolyProxy, init_getset);
 		PyType_Ready_Attr(dict, KX_RadarSensor, init_getset);
@@ -292,7 +292,7 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 #ifdef USE_MATHUTILS
 	/* Init mathutils callbacks */
 	KX_GameObject_Mathutils_Callback_Init();
-	KX_ObjectActuator_Mathutils_Callback_Init();
+	SCA_ObjectActuator_Mathutils_Callback_Init();
 	KX_BlenderMaterial_Mathutils_Callback_Init();
 	BL_Texture_Mathutils_Callback_Init();
 #endif
