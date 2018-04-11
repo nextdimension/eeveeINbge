@@ -97,6 +97,7 @@ set(SRC
 	SCA_RandomNumberGenerator.cpp
 	SCA_RandomSensor.cpp
 	SCA_RaySensor.cpp
+	SCA_SoundActuator.cpp
 	SCA_TimeEventManager.cpp
 	SCA_TrackToActuator.cpp
 	SCA_VibrationActuator.cpp
@@ -154,6 +155,7 @@ set(SRC
 	SCA_RandomNumberGenerator.h
 	SCA_RandomSensor.h
 	SCA_RaySensor.h
+	SCA_SoundActuator.h
 	SCA_TimeEventManager.h
 	SCA_TrackToActuator.h
 	SCA_VibrationActuator.h
@@ -175,6 +177,15 @@ if(WITH_SDL)
 	if(WITH_SDL_DYNLOAD)
 		add_definitions(-DWITH_SDL_DYNLOAD)
 	endif()
+endif()
+
+if(WITH_AUDASPACE)
+	add_definitions(-DWITH_AUDASPACE)
+
+	list(APPEND INC_SYS
+		${AUDASPACE_C_INCLUDE_DIRS}
+		${AUDASPACE_PY_INCLUDE_DIRS}
+	)
 endif()
 
 blender_add_lib(ge_logic "${SRC}" "${INC}" "${INC_SYS}")
