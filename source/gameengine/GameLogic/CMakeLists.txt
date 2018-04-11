@@ -101,6 +101,7 @@ set(SRC
 	SCA_RandomSensor.cpp
 	SCA_RaySensor.cpp
 	SCA_ReplaceMeshActuator.cpp
+	SCA_SceneActuator.cpp
 	SCA_SoundActuator.cpp
 	SCA_StateActuator.cpp
 	SCA_SteeringActuator.cpp
@@ -163,6 +164,7 @@ set(SRC
 	SCA_RandomSensor.h
 	SCA_RaySensor.h
 	SCA_ReplaceMeshActuator.h
+	SCA_SceneActuator.h
 	SCA_SoundActuator.h
 	SCA_StateActuator.h
 	SCA_SteeringActuator.h

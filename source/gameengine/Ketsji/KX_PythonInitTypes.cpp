@@ -68,7 +68,7 @@
 #include "SCA_AddObjectActuator.h"
 #include "SCA_EndObjectActuator.h"
 #include "SCA_ReplaceMeshActuator.h"
-#include "KX_SceneActuator.h"
+#include "SCA_SceneActuator.h"
 #include "SCA_StateActuator.h"
 #include "SCA_SteeringActuator.h"
 #include "SCA_TrackToActuator.h"
@@ -246,7 +246,7 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 		PyType_Ready_Attr(dict, KX_Scene, init_getset);
 		PyType_Ready_Attr(dict, KX_WorldInfo, init_getset);
 		PyType_Ready_Attr(dict, KX_NavMeshObject, init_getset);
-		PyType_Ready_Attr(dict, KX_SceneActuator, init_getset);
+		PyType_Ready_Attr(dict, SCA_SceneActuator, init_getset);
 		PyType_Ready_Attr(dict, SCA_SoundActuator, init_getset);
 		PyType_Ready_Attr(dict, SCA_StateActuator, init_getset);
 		PyType_Ready_Attr(dict, SCA_SteeringActuator, init_getset);

@@ -25,7 +25,7 @@
  * ***** END GPL LICENSE BLOCK *****
  */
 
-/** \file KX_SceneActuator.h
+/** \file SCA_SceneActuator.h
  *  \ingroup ketsji
  */
 
@@ -36,7 +36,7 @@
 #include "SCA_IScene.h" /* Replace_IScene only */
 #include "KX_Scene.h" /* Replace_IScene only */
 
-class KX_SceneActuator : public SCA_IActuator
+class SCA_SceneActuator : public SCA_IActuator
 {
 	Py_Header
 	
@@ -68,13 +68,13 @@ class KX_SceneActuator : public SCA_IActuator
 		KX_SCENE_MAX
 	};
 	
-	KX_SceneActuator(SCA_IObject* gameobj,
+	SCA_SceneActuator(SCA_IObject* gameobj,
 					 int mode,
 					 KX_Scene* scene,
 					 KX_KetsjiEngine* ketsjiEngine,
 					 const std::string& nextSceneName,
 					 KX_Camera* camera);
-	virtual ~KX_SceneActuator();
+	virtual ~SCA_SceneActuator();
 
 	virtual CValue* GetReplica();
 	virtual void ProcessReplica();
