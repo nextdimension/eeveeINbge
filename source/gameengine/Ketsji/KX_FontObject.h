@@ -38,11 +38,7 @@ class KX_FontObject : public KX_GameObject
 {
 public:
 	Py_Header
-	KX_FontObject(void *sgReplicationInfo,
-	              SG_Callbacks callbacks,
-	              RAS_Rasterizer *rasterizer,
-	              Object *ob,
-	              bool do_color_management);
+	KX_FontObject(void *sgReplicationInfo, SG_Callbacks callbacks, Object *ob);
 
 	virtual ~KX_FontObject();
 
@@ -67,33 +63,15 @@ public:
 
 	void SetCurveFromString(const std::string text);
 
-	/// Return text dimensions in blender unit.
-	const MT_Vector2 GetTextDimensions();
-
 protected:
 	std::string m_text;
 	std::vector<std::string> m_texts;
-	Object *m_object;
-	int m_fontid;
-	int m_dpi;
-	float m_fsize;
-	float m_resolution;
-	float m_line_spacing;
-	MT_Vector3 m_offset;
 
-	std::string m_backupText;
-
-	/// needed for drawing routine
-	class RAS_Rasterizer *m_rasterizer;
-
-	bool m_do_color_management;
-
-	void GetTextAabb(MT_Vector2& min, MT_Vector2& max);
+	std::string m_backupText; //eevee
 
 #ifdef WITH_PYTHON
 	static PyObject *pyattr_get_text(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 	static int pyattr_set_text(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef, PyObject *value);
-	static PyObject *pyattr_get_dimensions(PyObjectPlus *self_v, const KX_PYATTRIBUTE_DEF *attrdef);
 #endif
 };
 
