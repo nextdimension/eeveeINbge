@@ -50,7 +50,7 @@
 #include "KX_Camera.h"
 #include "SCA_CameraActuator.h"
 #include "KX_CharacterWrapper.h"
-#include "KX_ConstraintActuator.h"
+#include "SCA_ConstraintActuator.h"
 #include "KX_ConstraintWrapper.h"
 #include "SCA_GameActuator.h"
 #include "KX_LibLoadStatus.h"
@@ -220,7 +220,7 @@ PyMODINIT_FUNC initGameTypesPythonBinding(void)
 		PyType_Ready_Attr(dict, KX_Camera, init_getset);
 		PyType_Ready_Attr(dict, SCA_CameraActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_CharacterWrapper, init_getset);
-		PyType_Ready_Attr(dict, KX_ConstraintActuator, init_getset);
+		PyType_Ready_Attr(dict, SCA_ConstraintActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_ConstraintWrapper, init_getset);
 		PyType_Ready_Attr(dict, SCA_GameActuator, init_getset);
 		PyType_Ready_Attr(dict, KX_GameObject, init_getset);
