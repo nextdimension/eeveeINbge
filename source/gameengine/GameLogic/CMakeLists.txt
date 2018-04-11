@@ -102,6 +102,7 @@ set(SRC
 	SCA_RaySensor.cpp
 	SCA_ReplaceMeshActuator.cpp
 	SCA_SoundActuator.cpp
+	SCA_StateActuator.cpp
 	SCA_SteeringActuator.cpp
 	SCA_TimeEventManager.cpp
 	SCA_TrackToActuator.cpp
@@ -163,6 +164,7 @@ set(SRC
 	SCA_RaySensor.h
 	SCA_ReplaceMeshActuator.h
 	SCA_SoundActuator.h
+	SCA_StateActuator.h
 	SCA_SteeringActuator.h
 	SCA_TimeEventManager.h
 	SCA_TrackToActuator.h

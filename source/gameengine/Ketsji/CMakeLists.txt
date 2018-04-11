@@ -118,7 +118,6 @@ set(SRC
 	KX_ScalingInterpolator.cpp
 	KX_Scene.cpp
 	KX_SceneActuator.cpp
-	KX_StateActuator.cpp
 	KX_TextMaterial.cpp
 	KX_TimeCategoryLogger.cpp
 	KX_TimeLogger.cpp
@@ -180,7 +179,6 @@ set(SRC
 	KX_ScalingInterpolator.h
 	KX_Scene.h
 	KX_SceneActuator.h
-	KX_StateActuator.h
 	KX_TextMaterial.h
 	KX_TimeCategoryLogger.h
 	KX_TimeLogger.h
