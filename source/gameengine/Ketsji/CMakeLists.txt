@@ -129,7 +129,6 @@ set(SRC
 	KX_TrackToActuator.cpp
 	KX_VehicleWrapper.cpp
 	KX_VertexProxy.cpp
-	KX_VisibilityActuator.cpp
 	KX_WorldInfo.cpp
 	KX_WorldIpoController.cpp
 	KX_CollisionContactPoints.cpp
@@ -198,7 +197,6 @@ set(SRC
 	KX_TrackToActuator.h
 	KX_VehicleWrapper.h
 	KX_VertexProxy.h
-	KX_VisibilityActuator.h
 	KX_WorldInfo.h
 	KX_WorldIpoController.h
 	KX_CollisionContactPoints.h
