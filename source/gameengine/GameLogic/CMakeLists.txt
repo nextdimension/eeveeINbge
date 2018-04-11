@@ -28,6 +28,7 @@ set(INC
 	../Common
 	../Device
 	../Expressions
+	../Ketsji
 	../Rasterizer
 	../SceneGraph
 	../../blender/blenlib
@@ -51,6 +52,7 @@ set(SRC
 	SCA_DelaySensor.cpp
 	SCA_EventManager.cpp
 	SCA_ExpressionController.cpp
+	SCA_GameActuator.cpp
 	SCA_IActuator.cpp
 	SCA_IController.cpp
 	SCA_IInputDevice.cpp
@@ -92,6 +94,7 @@ set(SRC
 	SCA_DelaySensor.h
 	SCA_EventManager.h
 	SCA_ExpressionController.h
+	SCA_GameActuator.h
 	SCA_IActuator.h
 	SCA_IController.h
 	SCA_IInputDevice.h
