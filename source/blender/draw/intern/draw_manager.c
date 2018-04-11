@@ -2351,11 +2351,13 @@ void DRW_game_render_loop_end()
 	}
 
 	DRW_opengl_context_enable();
-	drw_viewport_cache_resize();
-	GPU_viewport_free(DST.viewport);
+	//drw_viewport_cache_resize();
+	//GPU_viewport_free(DST.viewport);
 
 	draw_engine_eevee_type.engine_free();
 	drw_game_eevee_view_layer_data_free();
+
+	memset(&DST, 0xFF, offsetof(DRWManager, ogl_context));
 
 	DRW_opengl_context_disable();
 }
