@@ -100,10 +100,11 @@ struct RAS_MeshObject::fronttoback
 
 // mesh object
 
-RAS_MeshObject::RAS_MeshObject(Mesh *mesh, const LayersInfo& layersInfo)
+RAS_MeshObject::RAS_MeshObject(Object *ob, Mesh *mesh, const LayersInfo& layersInfo)
 	:m_name(mesh->id.name + 2),
 	m_layersInfo(layersInfo),
-	m_mesh(mesh)
+	m_mesh(mesh),
+	m_ob(ob)
 {
 }
 
@@ -121,6 +122,11 @@ RAS_MeshObject::~RAS_MeshObject()
 		delete *it;
 	}
 	m_materials.clear();
+}
+
+Object *RAS_MeshObject::GetBlenderObject()
+{
+	return m_ob;
 }
 
 int RAS_MeshObject::NumMaterials()

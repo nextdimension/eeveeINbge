@@ -52,6 +52,16 @@
 #include "EXP_PyObjectPlus.h"
 #include "EXP_ListWrapper.h"
 
+extern "C" {
+#  include "BKE_customdata.h"
+#  include "BKE_cdderivedmesh.h"
+#  include "BKE_DerivedMesh.h"
+#  include "BKE_layer.h"
+#  include "depsgraph/DEG_depsgraph_query.h"
+#  include "DNA_object_types.h"
+#  include "windowmanager/WM_types.h"
+}
+
 PyTypeObject KX_MeshProxy::Type = {
 	PyVarObject_HEAD_INIT(nullptr, 0)
 	"KX_MeshProxy",
@@ -290,51 +300,35 @@ PyObject *KX_MeshProxy::PyTransformUV(PyObject *args, PyObject *kwds)
 		uvindex_from = -1;
 	}
 
-	/* transform mesh verts */
-	for (unsigned short i = 0, num = m_meshobj->NumMaterials(); i < num; ++i) {
-		if (matindex == -1) {
-			/* always transform */
-		}
-		else if (matindex == i) {
-			/* we found the right index! */
-		}
-		else {
-			continue;
-		}
+	Mesh *mesh = m_meshobj->GetMesh();
+	Object *ob = m_meshobj->GetBlenderObject();
+	// Get DerivedMesh data
+	DerivedMesh *dm = CDDM_from_mesh(mesh);
+	DM_ensure_tessface(dm);
 
-		RAS_MeshMaterial *mmat = m_meshobj->GetMeshMaterial(i);
-		RAS_IDisplayArray *array = mmat->GetDisplayArray();
-		ok = true;
+	MVert *mvert = dm->getVertArray(dm);
+	int totvert = dm->getNumVerts(dm);
 
-		for (unsigned int j = 0, size = array->GetVertexCount(); j < size; ++j) {
-			RAS_ITexVert *vert = array->GetVertex(j);
-			if (uvindex_from != -1) {
-				vert->SetUV(uvindex, vert->getUV(uvindex_from));
-			}
+	MFace *mface = dm->getTessFaceArray(dm);
+	MTFace *tface = static_cast<MTFace*>(dm->getTessFaceDataArray(dm, CD_MTFACE));
+	MPoly *mpolyarray = (MPoly *)dm->getPolyArray(dm);
+	MLoop *mlooparray = (MLoop *)dm->getLoopArray(dm);
+	MEdge *medgearray = (MEdge *)dm->getEdgeArray(dm);
+	int *mfaceTompoly = (int *)dm->getTessFaceDataArray(dm, CD_ORIGINDEX);
+	float(*tangent)[4] = nullptr;
+	int totface = dm->getNumTessFaces(dm);
 
-			if (uvindex >= 0) {
-				vert->TransformUV(uvindex, transform);
-			}
-			else if (uvindex == -1) {
-				for (int i = 0; i < RAS_Texture::MaxUnits; ++i) {
-					vert->TransformUV(i, transform);
-				}
-			}
-		}
-
-		array->AppendModifiedFlag(RAS_IDisplayArray::UVS_MODIFIED);
-
-		/* if we set a material index, quit when done */
-		if (matindex != -1) {
-			break;
-		}
+	for (int f = 0; f < totface; f++, mface++)
+	{
+		MLoopUV *loop = (MLoopUV *)CustomData_get_layer_n(&dm->loopData, CD_MLOOPUV, f);
+		float trans[4][4];
+		transform.getValue(&trans[0][0]);
+		/* get coordinates, normals and tangents */
+		
+		loop->uv[0] += 0.1;
 	}
 
-	if (ok == false) {
-		PyErr_Format(PyExc_ValueError,
-		             "mesh.transformUV(...): invalid material index %d", matindex);
-		return nullptr;
-	}
+	DEG_id_tag_update(&ob->id, OB_RECALC_DATA);
 
 	Py_RETURN_NONE;
 }

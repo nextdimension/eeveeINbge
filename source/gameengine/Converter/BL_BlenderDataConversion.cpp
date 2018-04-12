@@ -550,7 +550,7 @@ RAS_MeshObject* BL_ConvertMesh(Mesh* mesh, Object* blenderobj, KX_Scene* scene, 
 		}
 	}
 
-	meshobj = new RAS_MeshObject(mesh, layersInfo);
+	meshobj = new RAS_MeshObject(blenderobj, mesh, layersInfo);
 
 	meshobj->m_sharedvertex_map.resize(totvert);
 

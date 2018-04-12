@@ -35,6 +35,8 @@
 
 #include "DEG_depsgraph.h"
 
+#include "DNA_object_types.h"
+
 struct ID;
 
 struct Base;

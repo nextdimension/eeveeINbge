@@ -54,6 +54,8 @@ struct Mesh;
 struct MTFace;
 struct MCol;
 
+struct Object;
+
 /* RAS_MeshObject is a mesh used for rendering. It stores polygons,
  * but the actual vertices and index arrays are stored in material
  * buckets, referenced by the list of RAS_MeshMaterials. */
@@ -99,11 +101,15 @@ private:
 protected:
 	RAS_MeshMaterialList m_materials;
 	Mesh *m_mesh;
+	Object *m_ob;
 
 public:
 	// for now, meshes need to be in a certain layer (to avoid sorting on lights in realtime)
-	RAS_MeshObject(Mesh *mesh, const LayersInfo& layersInfo);
+	RAS_MeshObject(Object *ob, Mesh *mesh, const LayersInfo& layersInfo);
 	virtual ~RAS_MeshObject();
+
+
+	Object *GetBlenderObject();
 
 	// materials
 	int NumMaterials();
